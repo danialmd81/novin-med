@@ -8,7 +8,7 @@ virt-install \
   --vcpus 1 \
   --memory 256 \
   --import \
-  --disk 2018-11-13-raspbian-stretch.img,format=raw,bus=virtio \
+  --disk ../../../2018-11-13-raspbian-stretch.img,format=raw,bus=virtio \
   --network user,model=virtio \
   --video vga \
   --graphics spice \
