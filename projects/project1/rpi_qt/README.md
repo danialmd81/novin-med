@@ -67,8 +67,8 @@ urlcolor: blue
 [on RPi]
 
 ```sh
-sudo mkdir /absolute/path/to/qt5pi
-sudo chown pi:pi /absolute/path/to/qt5pi
+sudo mkdir /path/to/qt5pi
+sudo chown pi:pi /path/to/qt5pi
 ```
 
 ## 4. Prepare Host PC
@@ -88,11 +88,11 @@ sudo chown pi:pi /absolute/path/to/qt5pi
 [on host PC]
 
 ```sh
-mkdir /absolute/path/to/rpi-sysroot /absolute/path/to/rpi-sysroot/usr /absolute/path/to/rpi-sysroot/opt
-rsync -avz root@350g:/lib /absolute/path/to/rpi-sysroot
-rsync -avz root@350g:/usr/include /absolute/path/to/rpi-sysroot/usr
-rsync -avz root@350g:/usr/lib /absolute/path/to/rpi-sysroot/usr
-rsync -avz root@350g:/opt/vc /absolute/path/to/rpi-sysroot/opt
+mkdir /path/to/rpi-sysroot /path/to/rpi-sysroot/usr /path/to/rpi-sysroot/opt
+rsync -avz root@350g:/lib /path/to/rpi-sysroot
+rsync -avz root@350g:/usr/include /path/to/rpi-sysroot/usr
+rsync -avz root@350g:/usr/lib /path/to/rpi-sysroot/usr
+rsync -avz root@350g:/opt/vc /path/to/rpi-sysroot/opt
 ```
 
 ## 6. Fix Sysroot Symlinks
@@ -102,7 +102,7 @@ rsync -avz root@350g:/opt/vc /absolute/path/to/rpi-sysroot/opt
 ```sh
 wget https://raw.githubusercontent.com/Kukkimonsuta/rpi-buildqt/master/scripts/utils/sysroot-relativelinks.py
 chmod +x sysroot-relativelinks.py
-./sysroot-relativelinks.py /absolute/path/to/rpi-sysroot
+./sysroot-relativelinks.py /path/to/rpi-sysroot
 ```
 
 ## 7. Get Qt and Configure
@@ -158,7 +158,7 @@ make install
 
 ```sh
 cd ..
-rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
+rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
 ```
 
 ## 9. Build and Test Example
@@ -177,7 +177,7 @@ scp qopenglwidget root@350g:/home/pi
 [on RPi]
 
 ```sh
-echo /absolute/path/to/qt5pi/lib | tee /etc/ld.so.conf.d/qt5pi.conf
+echo /path/to/qt5pi/lib | tee /etc/ld.so.conf.d/qt5pi.conf
 ldconfig
 ```
 
@@ -205,10 +205,10 @@ ln -s /opt/vc/lib/libGLESv2.so /opt/vc/lib/libGLESv2.so.2
 ```sh
 git clone git://code.qt.io/qt/<qt-module>.git -b <qt-version>
 cd <qt-module>
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 make install
-rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
+rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
 ```
 
 ```sh
@@ -222,35 +222,35 @@ git clone git://code.qt.io/qt/qtvirtualkeyboard.git -b 5.12
 
 ```sh
 cd qtdeclarative
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtquickcontrols
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 cd ../qtserialport
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtquickcontrols2
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtsvg
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtvirtualkeyboard
-/absolute/path/to/host-qt5/bin/qmake
+/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
-rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
+rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
 ```
 
 > add `#include <limits>` if you get errors about `std::numeric_limits` during make.
@@ -278,8 +278,8 @@ If Qt apps fail to find platform plugins:
 
 ```sh
 export QT_QPA_PLATFORM=eglfs
-export QT_QPA_PLATFORM_PLUGIN_PATH=/absolute/path/to/qt5pi/plugins/platforms
-export LD_LIBRARY_PATH=/absolute/path/to/qt5pi/lib
+export QT_QPA_PLATFORM_PLUGIN_PATH=/path/to/qt5pi/plugins/platforms
+export LD_LIBRARY_PATH=/path/to/qt5pi/lib
 ```
 
 ## Qt Creator Setup
