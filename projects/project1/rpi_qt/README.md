@@ -67,8 +67,8 @@ urlcolor: blue
 [on RPi]
 
 ```sh
-sudo mkdir /usr/local/qt5pi
-sudo chown pi:pi /usr/local/qt5pi
+sudo mkdir /absolute/path/to/qt5pi
+sudo chown pi:pi /absolute/path/to/qt5pi
 ```
 
 ## 4. Prepare Host PC
@@ -88,11 +88,11 @@ sudo chown pi:pi /usr/local/qt5pi
 [on host PC]
 
 ```sh
-mkdir /usr/local/rpi-sysroot /usr/local/rpi-sysroot/usr /usr/local/rpi-sysroot/opt
-rsync -avz root@350g:/lib /usr/local/rpi-sysroot
-rsync -avz root@350g:/usr/include /usr/local/rpi-sysroot/usr
-rsync -avz root@350g:/usr/lib /usr/local/rpi-sysroot/usr
-rsync -avz root@350g:/opt/vc /usr/local/rpi-sysroot/opt
+mkdir /absolute/path/to/rpi-sysroot /absolute/path/to/rpi-sysroot/usr /absolute/path/to/rpi-sysroot/opt
+rsync -avz root@350g:/lib /absolute/path/to/rpi-sysroot
+rsync -avz root@350g:/usr/include /absolute/path/to/rpi-sysroot/usr
+rsync -avz root@350g:/usr/lib /absolute/path/to/rpi-sysroot/usr
+rsync -avz root@350g:/opt/vc /absolute/path/to/rpi-sysroot/opt
 ```
 
 ## 6. Fix Sysroot Symlinks
@@ -102,7 +102,7 @@ rsync -avz root@350g:/opt/vc /usr/local/rpi-sysroot/opt
 ```sh
 wget https://raw.githubusercontent.com/Kukkimonsuta/rpi-buildqt/master/scripts/utils/sysroot-relativelinks.py
 chmod +x sysroot-relativelinks.py
-./sysroot-relativelinks.py /usr/local/rpi-sysroot
+./sysroot-relativelinks.py /absolute/path/to/rpi-sysroot
 ```
 
 ## 7. Get Qt and Configure
@@ -129,11 +129,17 @@ git clone git://code.qt.io/qt/qtbase.git -b 5.12
 cd qtbase
 ```
 
+> or use qt-everywhere-src-5.12.x.tar.xz and its qtbase subdirectory.
+
 ```sh
-./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=/usr/local/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot /usr/local/rpi-sysroot/ -opensource -confirm-license -make libs -skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -nomake examples -nomake tests -prefix /usr/local/qt5pi -extprefix /usr/local/ext-qt5pi -hostprefix /usr/local/host-qt5 -pkg-config -no-use-gold-linker -v
+./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=/absolute/path/to/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot /absolute/path/to/rpi-sysroot/ -opensource -confirm-license -make libs -skip qtscript -skip qtwayland -skip qtdatavis3d -skip  qtwebengine -skip qtdoc -nomake examples -nomake tests -prefix /usr/local/qt5pi -extprefix /absolute/path/to/ext-qt5pi -hostprefix /absolute/path/to/host-qt5 -pkg-config -no-use-gold-linker -v
 ```
 
+> no relative path for any paths just absolute path.
 > add `#include <limits>` if you get errors about `std::numeric_limits` during configure.
+> `qt-everywhere-src-5.12.11/qtbase/src/corelib/global/qendian.h`
+> `qt-everywhere-src-5.12.11/qtbase/src/corelib/tools/qbytearraymatcher.h`
+> `qt-everywhere-src-5.12.11/qttools/src/qdoc/generator.cpp`
 
 ```sh
 make
@@ -152,7 +158,7 @@ make install
 
 ```sh
 cd ..
-rsync -avz /usr/local/ext-qt5pi/ root@350g:/usr/local/qt5pi/
+rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
 ```
 
 ## 9. Build and Test Example
@@ -171,7 +177,7 @@ scp qopenglwidget root@350g:/home/pi
 [on RPi]
 
 ```sh
-echo /usr/local/qt5pi/lib | tee /etc/ld.so.conf.d/qt5pi.conf
+echo /absolute/path/to/qt5pi/lib | tee /etc/ld.so.conf.d/qt5pi.conf
 ldconfig
 ```
 
@@ -199,10 +205,10 @@ ln -s /opt/vc/lib/libGLESv2.so /opt/vc/lib/libGLESv2.so.2
 ```sh
 git clone git://code.qt.io/qt/<qt-module>.git -b <qt-version>
 cd <qt-module>
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 make install
-rsync -avz /usr/local/ext-qt5pi/ root@350g:/usr/local/qt5pi/
+rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
 ```
 
 ```sh
@@ -216,35 +222,35 @@ git clone git://code.qt.io/qt/qtvirtualkeyboard.git -b 5.12
 
 ```sh
 cd qtdeclarative
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtquickcontrols
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 cd ../qtserialport
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtquickcontrols2
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtsvg
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
 cd ../qtvirtualkeyboard
-/usr/local/host-qt5/bin/qmake
+/absolute/path/to/host-qt5/bin/qmake
 make
 sudo make install
 
-rsync -avz /usr/local/ext-qt5pi/ root@350g:/usr/local/qt5pi/
+rsync -avz /absolute/path/to/ext-qt5pi/ root@350g:/absolute/path/to/qt5pi/
 ```
 
 > add `#include <limits>` if you get errors about `std::numeric_limits` during make.
@@ -272,8 +278,8 @@ If Qt apps fail to find platform plugins:
 
 ```sh
 export QT_QPA_PLATFORM=eglfs
-export QT_QPA_PLATFORM_PLUGIN_PATH=/usr/local/qt5pi/plugins/platforms
-export LD_LIBRARY_PATH=/usr/local/qt5pi/lib
+export QT_QPA_PLATFORM_PLUGIN_PATH=/absolute/path/to/qt5pi/plugins/platforms
+export LD_LIBRARY_PATH=/absolute/path/to/qt5pi/lib
 ```
 
 ## Qt Creator Setup
