@@ -1,79 +1,30 @@
 ---
-title: "RaspberryPi2EGLFS Cross-Compile and Qt Setup Guide"
-author: "Danial Mobini"
-date: "2025-12-08"
+title: "RaspberryPi3EGLFS Cross-Compile and Qt Setup Guide"
+author: []
+date: "Azar 1404"
 geometry: margin=1in
 fontsize: 12pt
-toc: true
-toc-title: "Table of Contents"
-toc-depth: 2
 mainfont: "DejaVu Sans"
-sansfont: "Arial"
 monofont: "DejaVu Sans Mono"
+sansfont: "Arial"
 linkcolor: blue
 urlcolor: blue
+header-includes:
+  - \usepackage{fvextra}
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,fontsize=\footnotesize,commandchars=\\\{\},breaksymbolleft={},breaksymbolright={}}
+  - \makeatletter
+  - \renewcommand{\maketitle}{
+      \begin{center}
+        {\LARGE \@title \par}
+        {\large \@date \par}
+      \end{center}
+    }
+  - \makeatother
 ---
 
-# RaspberryPi2EGLFS Cross-Compile and Qt Setup Guide
+# RaspberryPi3EGLFS Cross-Compile and Qt Setup Guide
 
-## Host PC vs Raspberry Pi Steps
-
-- **[on host PC]**: Run these commands on your Linux desktop or build machine.
-- **[on RPi]**: Run these commands on your Raspberry Pi device.
-
-## 1. Prepare Raspbian Image
-
-[on RPi]
-
-- Download old or latest Raspbian images.
-- Unzip and write to SD card:
-
-  ```sh
-  sudo dd if=2015-09-24-raspbian-jessie.img of=/dev/mmcblk0 bs=4M
-  ```
-
-- (Optional) Configure Pi:
-
-  ```sh
-  sudo raspi-config
-  ```
-
-  - Boot to console
-  - Set GPU memory to 256 MB
-
-- For Raspbian Stretch, update firmware:
-
-  ```sh
-  sudo rpi-update
-  reboot
-  ```
-
-## 2. Install Development Files on Pi
-
-[on RPi]
-
-- Edit `/etc/apt/sources.list` and uncomment `deb-src` line.
-- Update and install dependencies:
-
-  ```sh
-  sudo apt-get update
-  sudo apt-get build-dep qt4-x11
-  sudo apt-get build-dep libqt5gui5
-  sudo apt-get install libudev-dev libinput-dev libts-dev libxcb-xinerama0-dev libxcb-xinerama0
-  ```
-
-## 3. Prepare Target Directory on Pi
-
-[on RPi]
-
-```sh
-sudo mkdir /path/to/qt5pi
-sudo chown pi:pi /path/to/qt5pi
-```
-
-## 4. Prepare Host PC
-
-[on host PC]
+## 1. Prepare Host PC
 
 - Create working directory and get toolchain:
 
@@ -83,21 +34,22 @@ sudo chown pi:pi /path/to/qt5pi
   git clone https://github.com/raspberrypi/tools
   ```
 
-## 5. Create and Sync Sysroot
+- We used Linaro toolchain:
 
-[on host PC]
+  <https://releases.linaro.org/components/toolchain/binaries/>
+
+## 2. Create and Sync Sysroot
 
 ```sh
 mkdir /path/to/rpi-sysroot /path/to/rpi-sysroot/usr /path/to/rpi-sysroot/opt
-rsync -avz root@350g:/lib /path/to/rpi-sysroot
-rsync -avz root@350g:/usr/include /path/to/rpi-sysroot/usr
-rsync -avz root@350g:/usr/lib /path/to/rpi-sysroot/usr
-rsync -avz root@350g:/opt/vc /path/to/rpi-sysroot/opt
+rsync -avz root@rpi3device:/lib /path/to/rpi-sysroot
+rsync -avz root@rpi3device:/usr/include /path/to/rpi-sysroot/usr
+rsync -avz root@rpi3device:/usr/lib /path/to/rpi-sysroot/usr
+rsync -avz root@rpi3device:/opt/vc /path/to/rpi-sysroot/opt
+rsync -avz root@rpi3device:/usr/local/qt5pi /path/to/rpi-sysroot/usr/local/qt5pi
 ```
 
-## 6. Fix Sysroot Symlinks
-
-[on host PC]
+## 3. Fix Sysroot Symlinks
 
 ```sh
 wget https://raw.githubusercontent.com/Kukkimonsuta/rpi-buildqt/master/scripts/utils/sysroot-relativelinks.py
@@ -105,41 +57,38 @@ chmod +x sysroot-relativelinks.py
 ./sysroot-relativelinks.py /path/to/rpi-sysroot
 ```
 
-## 7. Get Qt and Configure
-
-[on host PC]
+## 4. Get Qt and Configure
 
 ### Qt Shell Commands
+
+#### Clone Qt Base
 
 ```sh
 git clone git://code.qt.io/qt/qtbase.git -b <qt-version>
 cd qtbase
+```
+
+> or use qt-everywhere-src-<qt-version>.tar.xz and its qtbase subdirectory.
+
+#### Configure Qt for Cross-Compilation
+
+```sh
 ./configure -release -opengl es2 -device <rpi-version> \
--device-option CROSS_COMPILE=~/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin/arm-linux-gnueabihf- \
+-device-option CROSS_COMPILE=/absolute/path/to/linaro/bin/arm-linux-gnueabihf- \
 -sysroot ~/raspi/sysroot -opensource -confirm-license -make libs \
 -prefix /usr/local/qt5pi -extprefix ~/raspi/qt5pi -hostprefix ~/raspi/qt5 -v
-make
-make install
 ```
 
-### Shell Commands
+#### Configure Qt for Cross-Compilation (just tools)
 
 ```sh
-git clone git://code.qt.io/qt/qtbase.git -b 5.12
-cd qtbase
+./configure -release -opengl es2 -device <rpi-version> \
+-device-option CROSS_COMPILE=/absolute/path/to/linaro/bin/arm-linux-gnueabihf- \
+-sysroot ~/raspi/sysroot -opensource -confirm-license -make tools \
+-prefix /usr/local/qt5pi -extprefix ~/raspi/qt5pi -hostprefix ~/raspi/qt5 -v
 ```
 
-> or use qt-everywhere-src-5.12.x.tar.xz and its qtbase subdirectory.
-
-```sh
-./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=/absolute/path/to/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot /absolute/path/to/rpi-sysroot/ -opensource -confirm-license -make libs -skip qtscript -skip qtwayland -skip qtdatavis3d -skip  qtwebengine -skip qtdoc -nomake examples -nomake tests -prefix /usr/local/qt5pi -extprefix /absolute/path/to/ext-qt5pi -hostprefix /absolute/path/to/host-qt5 -pkg-config -no-use-gold-linker -v
-```
-
-> no relative path for any paths just absolute path.
-> add `#include <limits>` if you get errors about `std::numeric_limits` during configure.
-> `qt-everywhere-src-5.12.11/qtbase/src/corelib/global/qendian.h`
-> `qt-everywhere-src-5.12.11/qtbase/src/corelib/tools/qbytearraymatcher.h`
-> `qt-everywhere-src-5.12.11/qttools/src/qdoc/generator.cpp`
+#### Build and Install Qt
 
 ```sh
 make
@@ -152,110 +101,68 @@ make install
   git clean -dfx
   ```
 
-## 8. Deploy Qt to Device
+### What I Used
 
-[on host PC]
+#### Clone Qt Base
 
 ```sh
-cd ..
-rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
+git clone git://code.qt.io/qt/qtbase.git -b 5.12
+cd qtbase
 ```
 
-## 9. Build and Test Example
+#### Configure Qt for Cross-Compilation
 
-[on host PC]
+```sh
+./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=/absolute/path/to/bin/arm-linux-gnueabihf- -sysroot /absolute/path/to/rpi-sysroot/ -opensource -confirm-license -make libs -skip qtscript -skip qtwayland -skip qtdatavis3d -skip  qtwebengine -nomake examples -nomake tests -prefix /usr/local/qt5pi -extprefix /absolute/path/to/ext-qt5pi -hostprefix /absolute/path/to/host-qt5 -pkg-config -no-use-gold-linker -v
+```
+
+- **Note:** no relative path for any paths just use absolute paths.
+- **Note:** add `#include <limits>` if you get errors about `std::numeric_limits` during configure:
+  - `qt-everywhere-src-5.12.12/qtbase/src/corelib/global/qendian.h`
+  - `qt-everywhere-src-5.12.12/qtbase/src/corelib/tools/qbytearraymatcher.h`
+  - `qt-everywhere-src-5.12.12/qtbase/src/corelib/kernel/qvariant.h`
+  - `qt-everywhere-src-5.12.12/qtdeclarative/src/qml/jsruntime/qv4propertykey_p.h`
+  - `qt-everywhere-src-5.12.12/qttools/src/qdoc/generator.cpp`
+
+#### Configure Qt for Cross-Compilation (just tools)
+
+```sh
+./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=~/Code/novin-med/projects/project1/rpi_qt/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot ~/Code/novin-med/projects/project1/rpi_qt/rpi-sysroot/ -opensource -confirm-license -make tools -skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -nomake examples -nomake tests -prefix /usr/local/qt5pi -hostprefix ~/Code/novin-med/projects/project1/rpi_qt/qt5 -pkg-config -no-use-gold-linker
+```
+
+#### Build and Install Qt
+
+```sh
+make
+make install
+```
+
+- Clean build if needed:
+
+  ```sh
+  git clean -dfx
+  ```
+
+## 5. Build and Test Example
+
+> u can use device source code for this step.
 
 ```sh
 cd qtbase/examples/opengl/qopenglwidget
-~/raspi/qt5/bin/qmake
+/path/to/qmake
 make
-scp qopenglwidget root@350g:/home/pi
+scp qopenglwidget root@rpi3device:/home/pi
 ```
-
-## 10. Update Linker on Pi
-
-[on RPi]
-
-```sh
-echo /path/to/qt5pi/lib | tee /etc/ld.so.conf.d/qt5pi.conf
-ldconfig
-```
-
-## 11. Fix EGL/GLES Libraries
-
-[on RPi]
-
-```sh
-mv /usr/lib/arm-linux-gnueabihf/libEGL.so.1.0.0 /usr/lib/arm-linux-gnueabihf/libEGL.so.1.0.0_backup
-mv /usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.0.0 /usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.0.0_backup
-ln -s /opt/vc/lib/libEGL.so /usr/lib/arm-linux-gnueabihf/libEGL.so.1.0.0
-ln -s /opt/vc/lib/libGLESv2.so /usr/lib/arm-linux-gnueabihf/libGLESv2.so.2.0.0
-ln -s /opt/vc/lib/libbrcmEGL.so /opt/vc/lib/libEGL.so
-ln -s /opt/vc/lib/libbrcmGLESv2.so /opt/vc/lib/libGLESv2.so
-ln -s /opt/vc/lib/libEGL.so /opt/vc/lib/libEGL.so.1
-ln -s /opt/vc/lib/libGLESv2.so /opt/vc/lib/libGLESv2.so.2
-```
-
-## 12. Run Example on Pi
-
-- Run the example, should work fullscreen with input support.
-
-## 13. Build Other Qt Modules
-
-```sh
-git clone git://code.qt.io/qt/<qt-module>.git -b <qt-version>
-cd <qt-module>
-/path/to/host-qt5/bin/qmake
-make
-make install
-rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
-```
-
-```sh
-git clone git://code.qt.io/qt/qtdeclarative.git -b 5.12
-git clone git://code.qt.io/qt/qtquickcontrols.git -b 5.12
-git clone git://code.qt.io/qt/qtserialport.git -b 5.12
-git clone git://code.qt.io/qt/qtquickcontrols2.git -b 5.12
-git clone git://code.qt.io/qt/qtsvg.git -b 5.12
-git clone git://code.qt.io/qt/qtvirtualkeyboard.git -b 5.12
-```
-
-```sh
-cd qtdeclarative
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-
-cd ../qtquickcontrols
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-cd ../qtserialport
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-
-cd ../qtquickcontrols2
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-
-cd ../qtsvg
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-
-cd ../qtvirtualkeyboard
-/path/to/host-qt5/bin/qmake
-make
-sudo make install
-
-rsync -avz /path/to/ext-qt5pi/ root@350g:/usr/local/qt5pi/
-```
-
-> add `#include <limits>` if you get errors about `std::numeric_limits` during make.
 
 ## Additional Notes
+
+- For opengl shader error (black screen when deploy app), add
+
+```sh
+QMAKE_LFLAGS += -Wl,-rpath,/opt/vc/lib -Wl,-rpath,/usr/local/qt5pi/lib
+```
+
+ to `.pro` file for setting vc libraries path above arm-gnueabihf libraries path (EGLFS ES2)
 
 - For low resolution issues, add `disable_overscan=1` to `/boot/config.txt` and use `tvservice`/`fbset` to set resolution.
 - Enable Qt logging for debugging:
@@ -278,8 +185,8 @@ If Qt apps fail to find platform plugins:
 
 ```sh
 export QT_QPA_PLATFORM=eglfs
-export QT_QPA_PLATFORM_PLUGIN_PATH=/path/to/qt5pi/plugins/platforms
-export LD_LIBRARY_PATH=/path/to/qt5pi/lib
+export QT_QPA_PLATFORM_PLUGIN_PATH=/usr/local/qt5pi/plugins/platforms
+export LD_LIBRARY_PATH=/usr/local/qt5pi/lib
 ```
 
 ## Qt Creator Setup
