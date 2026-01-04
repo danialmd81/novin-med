@@ -4,6 +4,9 @@
 *.tar.xz
 *.zip
 
+*.bkp
+
+
 .vscode/
 
 projects/1_rpi_qt/linux-rpi-4.14.y/
