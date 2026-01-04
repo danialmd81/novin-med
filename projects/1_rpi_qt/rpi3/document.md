@@ -127,7 +127,7 @@ cd qtbase
 #### Configure Qt for Cross-Compilation (just tools)
 
 ```sh
-./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=~/Code/novin-med/projects/project1/rpi_qt/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot ~/Code/novin-med/projects/project1/rpi_qt/rpi-sysroot/ -opensource -confirm-license -make tools -skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -nomake examples -nomake tests -prefix /usr/local/qt5pi -hostprefix ~/Code/novin-med/projects/project1/rpi_qt/qt5 -pkg-config -no-use-gold-linker
+./configure -release -opengl es2 -device linux-rasp-pi3-g++ -device-option CROSS_COMPILE=/home/danial/Code/novin-med/projects/1_rpi_qt/rpi3/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- -sysroot /home/danial/Code/novin-med/projects/1_rpi_qt/rpi3/rpi-sysroot -opensource -confirm-license -make tools -skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -nomake examples -nomake tests -prefix /usr/local/qt5pi -hostprefix /home/danial/Code/novin-med/projects/1_rpi_qt/rpi3/qt5 -pkg-config -no-use-gold-linker
 ```
 
 #### Build and Install Qt
