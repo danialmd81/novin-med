@@ -9,18 +9,14 @@
 
 .vscode/
 
-projects/1_rpi_qt/linux-rpi-4.14.y/
-
-projects/1_rpi_qt/ext-qt5pi/
-projects/1_rpi_qt/host-qt5/
-
 projects/1_rpi_qt/InstallerApp/
 
-projects/1_rpi_qt/qt-everywhere-src-5.12.11/
-projects/1_rpi_qt/rpi-sysroot/
-projects/1_rpi_qt/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf
-projects/1_rpi_qt/qt5/
-projects/1_rpi_qt/Cross Compile QT for RPI3_Edited.odt
+projects/1_rpi_qt/rpi3/qt-everywhere-src-5.12.11/
+projects/1_rpi_qt/rpi3/qtbase/
+projects/1_rpi_qt/rpi3/rpi-sysroot/
+projects/1_rpi_qt/rpi3/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf
+projects/1_rpi_qt/rpi3/qt5/
+projects/1_rpi_qt/rpi3/Cross Compile QT for RPI3_Edited.odt
 
 projects/1_rpi_qt/rpi4/qt-everywhere-src-6.9.3/
 projects/1_rpi_qt/rpi4/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu
