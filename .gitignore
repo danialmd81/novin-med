@@ -10,6 +10,7 @@
 .vscode/
 
 projects/1_rpi_qt/InstallerApp/
+projects/1_rpi_qt/qt-everywhere-src-5.12.11
 
 projects/1_rpi_qt/rpi3/qt-everywhere-src-5.12.11/
 projects/1_rpi_qt/rpi3/qtbase/

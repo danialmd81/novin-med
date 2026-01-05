@@ -3,95 +3,157 @@
 ```mermaid
 flowchart TD
 root["/"]
-code["code/"]
-deploy["deploy/"]
 
-root --> code
-root --> deploy
+root --> control_board
+root --> ui_board["ui_board/"]
+root --> deploy["deploy/"]
 
-code --> base["base/"]
-base --> grand["grand/"]
-base --> metrix["metrix/"]
+ui_board --> base["device/"]
+base --> code_device_families(("like grand, metrix"))
 base --> code_shared["shared/"]
-grand --> grand_rpi["rpi/"]
-grand --> grand_rockchip["rockchip/"]
-metrix --> metrix_rpi["rpi/"]
-metrix --> metrix_rockchip["rockchip/"]
 code_shared --> code_shared_frontend["frontend/"]
 code_shared --> code_shared_backend["backend/"]
-grand_rpi --> dev_350g["dev_350g/"]
-grand_rpi --> dev_360g["dev_360g/"]
-grand_rockchip --> dev_350g_rk["dev_350g/"]
-grand_rockchip --> dev_360g_rk["dev_360g/"]
-metrix_rpi --> dev_215m["dev_215m/"]
-metrix_rockchip --> dev_215m_rk["dev_215m/"]
+code_device_families --> code_devices(("like 350g, 870m"))
+code_devices --> device_arch_type(("like rpi, rockchip"))
 
-code --> non_device["non_device/"]
+ui_board --> non_device["non_device/"]
 non_device --> installer["InstallerApp/"]
 non_device --> updater["OnlineUpdater/"]
 
-%% Device-level team separation
-dev_350g --> frontend_350g["frontend/"]
-dev_350g --> backend_350g["backend/"]
-dev_350g --> version_350g["VERSION"]
-dev_350g --> deploy_350g["deploy.sh"]
-dev_360g --> frontend_360g["frontend/"]
-dev_360g --> backend_360g["backend/"]
-dev_360g --> version_360g["VERSION"]
-dev_360g --> deploy_360g["deploy.sh"]
-dev_350g_rk --> frontend_350g_rk["frontend/"]
-dev_350g_rk --> backend_350g_rk["backend/"]
-dev_350g_rk --> version_350g_rk["VERSION"]
-dev_350g_rk --> deploy_350g_rk["deploy.sh"]
-dev_360g_rk --> frontend_360g_rk["frontend/"]
-dev_360g_rk --> backend_360g_rk["backend/"]
-dev_360g_rk --> version_360g_rk["VERSION"]
-dev_360g_rk --> deploy_360g_rk["deploy.sh"]
-dev_215m --> frontend_215m["frontend/"]
-dev_215m --> backend_215m["backend/"]
-dev_215m --> version_215m["VERSION"]
-dev_215m --> deploy_215m["deploy.sh"]
-dev_215m_rk --> frontend_215m_rk["frontend/"]
-dev_215m_rk --> backend_215m_rk["backend/"]
-dev_215m_rk --> version_215m_rk["VERSION"]
-dev_215m_rk --> deploy_215m_rk["deploy.sh"]
+%% Logic-level team separation
+device_arch_type --> logic_frontend["frontend/"]
+device_arch_type --> logic_backend["backend/"]
+device_arch_type --> logic_version{"VERSION"}
+device_arch_type --> logic_deploy{"deploy.sh"}
 
 deploy --> images["images/"]
 deploy --> cross_builds["cross_builds/"]
 deploy --> resources["resources/"]
 deploy --> scripts["scripts/"]
-deploy --> deploy_shared["shared/"]
 
-images --> images_rpi["rpi/"]
-images --> images_rockchip["rockchip/"]
-images_rpi --> raspbian_img["raspbian.img"]
-images_rockchip --> debian_img["debian.img"]
+images --> arch_images(("like rpi, rockchip"))
+arch_images --> img_device_families(("like grand, metrix"))
+img_device_families --> img_devices(("like 350g, 870m"))
+img_devices --> image_file{"image files with different display sizes"}
 
-cross_builds --> cb_rpi["rpi/"]
-cross_builds --> cb_rockchip["rockchip/"]
-cb_rpi --> cb_rpi_sysroot["sysroot/"]
-cb_rpi --> cb_rpi_qt["qt/"]
-cb_rpi --> cb_rpi_toolchain["toolchain/"]
-cb_rpi --> cb_rpi_binaries["binaries/"]
-cb_rockchip --> cb_rockchip_sysroot["sysroot/"]
-cb_rockchip --> cb_rockchip_qt["qt/"]
-cb_rockchip --> cb_rockchip_toolchain["toolchain/"]
-cb_rockchip --> cb_rockchip_binaries["binaries/"]
-scripts --> build_rpi["build_rpi.sh"]
-scripts --> build_rockchip["build_rockchip.sh"]
+cross_builds --> cb_type(("like rpi, rockchip"))
+cb_type --> cb_rpi_sysroot["sysroot/"]
+cb_type --> cb_rpi_qt["qt/"]
+cb_type --> cb_rpi_toolchain["toolchain/"]
+cb_type --> cb_rpi_binaries["binaries/"]
+scripts --> build["build.sh"]
 
-resources --> res_rpi["rpi/"]
-resources --> res_rockchip["rockchip/"]
-res_rpi --> rpi_config["config.txt"]
-res_rpi --> rpi_firmware["firmware.bin"]
-res_rockchip --> rockchip_config["config.txt"]
-res_rockchip --> rockchip_firmware["firmware.bin"]
+resources --> res_type(("like rpi, rockchip"))
+res_type --> rpi_config{"config.txt"}
+res_type --> rpi_firmware{"firmware.bin"}
 
-scripts --> deploy_device["deploy_device.sh"]
-deploy_shared --> deploy_template["deploy_template.sh"]
+scripts --> deploy_script["deploy.sh"]
 
-installer --> installer_deploy["deploy.sh"]
-updater --> updater_deploy["deploy.sh"]
+installer --> install_deploy["deploy.sh"]
+updater --> update_deploy["deploy.sh"]
 ```
 
 > Note: All device frontend/backend use shared code
+
+---
+
+Option 1: Board-Centric Structure
+
+```
+device_x/
+  ui_board/
+    frontend/
+    backend/
+    bridge/
+    VERSION
+    deploy.sh
+  control_board/
+    firmware/
+    drivers/
+    VERSION
+    deploy.sh
+  shared/
+    protocol/
+    utils/
+```
+
+Option 2: Function-Centric Structure
+
+```
+device_x/
+  frontend/         # UI code for UI board
+  backend/          # Backend/bridge code for UI board
+  control_firmware/ # Low-level control board code
+  shared/           # Shared code (protocols, utils)
+  deploy/
+    ui_board.sh
+    control_board.sh
+```
+
+Option 3: Board-Type Separation at Higher Level
+
+```
+code/
+  ui_boards/
+    device_x/
+      frontend/
+      backend/
+      bridge/
+  control_boards/
+    device_x/
+      firmware/
+      drivers/
+  shared/
+    protocol/
+    utils/
+```
+
+Option 4: Versioned Device Structure (as in your draft, but with board split)
+
+```
+code/
+  device_x/
+    ui_board/
+      frontend/
+      backend/
+      bridge/
+    control_board/
+      firmware/
+      drivers/
+    shared/
+      protocol/
+      utils/
+```
+
+Key Points:
+
+- Separate UI/bridge and control board code for clarity and team ownership.
+- Use a shared directory for protocol definitions and utilities used by both boards.
+- Keep deployment scripts and versioning per board if their release cycles differ.
+- Consider mirroring this structure for each device type/version.
+
+Let me know if you want a specific option detailed or adapted to your naming conventions!
+
+Here are some naming options for the two board types in your directory structure:
+
+For UI Boards:
+
+- ui_board
+- bridge_board
+- main_board
+- application_board
+- interface_board
+- host_board
+- master_board
+
+For Control Boards:
+
+- control_board
+- logic_board
+- mcu_board
+- slave_board
+- hardware_board
+- peripheral_board
+- device_board
+
+You can mix and match based on your team's preference and the terminology used in your documentation or hardware. For example: ui_board & control_board, main_board & logic_board, or bridge_board & mcu_board.
