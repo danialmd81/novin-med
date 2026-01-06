@@ -103,12 +103,15 @@ make install
 
 ### What I Used
 
-#### Clone Qt Base
+<!-- #### Clone Qt Base -->
 
-```sh
+<!-- ```sh
 git clone git://code.qt.io/qt/qtbase.git -b 5.12
 cd qtbase
-```
+``` -->
+### qt-everywhere-src-5.12.11.tar.xz
+
+downloaded and extracted.
 
 #### Configure Qt for Cross-Compilation
 
@@ -137,11 +140,11 @@ make
 make install
 ```
 
-- Clean build if needed:
+<!-- - Clean build if needed:
 
   ```sh
   git clean -dfx
-  ```
+  ``` -->
 
 ## 5. Build and Test Example
 
