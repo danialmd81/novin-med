@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/dialpad.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/digits.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/handwriting.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/main.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/numbers.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/en_US/symbols.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/dialpad.fallback</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/digits.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/handwriting.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/main.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/numbers.qml</file>
+        <file>QtQuick/VirtualKeyboard/Layouts/fa_FA/symbols.qml</file>
+    </qresource>
+</RCC>
