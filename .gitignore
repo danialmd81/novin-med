@@ -8,6 +8,8 @@
 
 
 .vscode/
+.qtcreator/
+build/
 
 projects/1_rpi_qt/InstallerApp/
 projects/1_rpi_qt/qt-everywhere-src-5.12.11
