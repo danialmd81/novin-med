@@ -1,15 +1,15 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls
 import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Settings
 
-Window {
+Rectangle {
     id: window
     width: 640
     height: 480
     visible: true
-    // title: qsTr("Hello World")
+    color: "#121212"
 
     ColumnLayout {
         anchors.fill: parent
@@ -37,33 +37,6 @@ Window {
             Layout.fillHeight: true
             color: "#202020"
             radius: 8
-        }
-    }
-
-    Component.onCompleted: {
-        VirtualKeyboardSettings.styleName = "laser-scanner";
-    }
-    InputPanel {
-        id: inputPanel
-        z: 99
-        y: window.height
-        width: window.width
-
-        states: State {
-            name: "visible"
-            when: inputPanel.active
-            PropertyChanges {
-                inputPanel.y: window.height - inputPanel.height
-            }
-        }
-        transitions: Transition {
-            from: ""
-            to: "visible"
-            reversible: true
-            NumberAnimation {
-                properties: "y"
-                easing.type: Easing.InOutQuad
-            }
         }
     }
 }
