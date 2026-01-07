@@ -1,4 +1,4 @@
-# device_g_760
+# device_g_760 (Biofeedback)
 
 ## Overview
 
@@ -18,21 +18,8 @@ Medical device application for the 760g device, running on Raspberry Pi.
 - `main.cpp` – Application entry point
 - `.pro` – Qt project configuration
 
-## Build Instructions
-
-- Qt 5.x/6.x, Linux (Raspberry Pi)
-- Build:
-
-  ```sh
-  qmake && make
-  ```
-
-## Run Instructions
-
-- Deploy binary to Raspberry Pi device.
-- Set `DEFINES += RASPBERRY_7INCH` or `DEFINES += RASPBERRY_10INCH` in `.pro` as needed.
-
 ## Notes / Limitations
 
 - Designed for 760g medical hardware.
 - Ensure medical compliance for therapy use.
+- Need Email and Password for device_a_760 feedback server access.
