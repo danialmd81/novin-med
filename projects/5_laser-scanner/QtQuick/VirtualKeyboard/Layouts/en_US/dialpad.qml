@@ -12,7 +12,7 @@ KeyboardLayout {
     inputMode: InputEngine.InputMode.Numeric
 
     KeyboardColumn {
-        Layout.fillWidth: true
+        Layout.fillWidth: false
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignHCenter
         Layout.preferredWidth: height
@@ -24,78 +24,62 @@ KeyboardLayout {
             Key {
                 key: Qt.Key_2
                 text: "2"
-                alternativeKeys: "2ABC"
-                smallText: "ABC"
-                smallTextVisible: true
             }
             Key {
                 key: Qt.Key_3
                 text: "3"
-                alternativeKeys: "3DEF"
-                smallText: "DEF"
-                smallTextVisible: true
             }
+            BackspaceKey {}
         }
         KeyboardRow {
             Key {
                 key: Qt.Key_4
                 text: "4"
-                alternativeKeys: "4GHI"
-                smallText: "GHI"
-                smallTextVisible: true
             }
             Key {
                 key: Qt.Key_5
                 text: "5"
-                alternativeKeys: "5JKL"
-                smallText: "JKL"
-                smallTextVisible: true
             }
             Key {
                 key: Qt.Key_6
                 text: "6"
-                alternativeKeys: "6MNO"
-                smallText: "MNO"
-                smallTextVisible: true
+            }
+            Key {
+                text: " "
+                displayText: "\u2423"
+                repeat: true
+                showPreview: false
+                key: Qt.Key_Space
+                highlighted: true
             }
         }
         KeyboardRow {
             Key {
                 key: Qt.Key_7
                 text: "7"
-                // TODO: #3 ISSUE: letters order bug on figma design
-                alternativeKeys: "7PQRS"
-                smallText: "PQRS"
-                smallTextVisible: true
             }
             Key {
                 key: Qt.Key_8
                 text: "8"
-                alternativeKeys: "8TUV"
-                smallText: "TUV"
-                smallTextVisible: true
             }
             Key {
                 key: Qt.Key_9
                 text: "9"
-                alternativeKeys: "9WXYZ"
-                smallText: "WXYZ"
-                smallTextVisible: true
             }
         }
         KeyboardRow {
-            BackspaceKey {}
-            ChangeLanguageKey {
-                customLayoutsOnly: true
-                visible: true
+            Key {
+                key: Qt.Key_Asterisk
+                text: "*"
+                alternativeKeys: "*+"
             }
-            // TODO: #2 check with mr.Karbasi if + color on figma is okay or not?
             Key {
                 key: Qt.Key_0
                 text: "0"
-                alternativeKeys: "0+"
-                smallText: "+"
-                smallTextVisible: true
+            }
+            Key {
+                text: "#"
+                key: Qt.Key_NumberSign
             }
             EnterKey {}
         }

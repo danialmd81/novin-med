@@ -5,8 +5,6 @@ import QtQuick.VirtualKeyboard.Settings
 import LaserScanner
 
 Window {
-    // flags: Qt.FramelessWindowHint
-
     width: mainScreen.width
     height: mainScreen.height
 

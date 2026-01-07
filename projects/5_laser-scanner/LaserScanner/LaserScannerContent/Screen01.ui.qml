@@ -21,14 +21,6 @@ Rectangle {
         anchors.margins: 0
         spacing: 12
 
-        // TextField {
-        //     Layout.fillWidth: true
-        //     inputMethodHints: Qt.ImhFormattedNumbersOnly // Shows numeric keyboard
-        //     placeholderText: "Type here..."
-        //     focus: true
-        //     font.pixelSize: 20
-        // }
-
         TextField {
             Layout.fillWidth: true
             inputMethodHints: Qt.ImhDigitsOnly
@@ -38,16 +30,8 @@ Rectangle {
             focus: true
             font.pixelSize: 20
         }
-
         TextField {
             Layout.fillWidth: true
-            placeholderText: "Type here..."
-            focus: true
-            font.pixelSize: 20
-        }
-        TextField {
-            Layout.fillWidth: true
-            inputMethodHints: Qt.ImhDialableCharactersOnly
             placeholderText: "Type here..."
             focus: true
             font.pixelSize: 20

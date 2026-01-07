@@ -11,6 +11,10 @@ qt6_add_qml_module(LaserScannerContent
     QML_FILES
         "App.qml"
         "Screen01.ui.qml"
+        "Splash/Splash.ui.qml"
+    RESOURCES
+        "images/Splash/image 58.svg"
+        "images/Splash/image 57.svg"
 )
 
 

@@ -1,0 +1,15 @@
+<RCC>
+    <qresource>
+        <file>LaserScanner.qmlproject</file>
+        <file>LaserScanner/Constants.qml</file>
+        <file>LaserScanner/EventListModel.qml</file>
+        <file>LaserScanner/EventListSimulator.qml</file>
+        <file>LaserScanner/qmldir</file>
+        <file>LaserScannerContent/App.qml</file>
+        <file>LaserScannerContent/Screen01.ui.qml</file>
+        <file>LaserScannerContent/Splash/Splash.ui.qml</file>
+        <file>LaserScannerContent/images/Splash/image 57.svg</file>
+        <file>LaserScannerContent/images/Splash/image 58.svg</file>
+        <file>qtquickcontrols2.conf</file>
+    </qresource>
+</RCC>
