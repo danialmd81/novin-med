@@ -231,6 +231,7 @@ KeyboardStyle {
             id: enterKeyBackground
             radius: 12
             gradient: Gradient {
+                orientation: Gradient.Horizontal
                 GradientStop {
                     position: 0.0
                     color: "#00EEFF"
