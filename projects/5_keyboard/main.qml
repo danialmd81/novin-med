@@ -7,8 +7,8 @@ import QtQuick.VirtualKeyboard
 import QtQuick.VirtualKeyboard.Settings
 
 Window {
-    width: 800
-    height: 480
+    width: 1200
+    height: 1000
     visible: true
     title: "Virtual Keyboard Style Test"
 

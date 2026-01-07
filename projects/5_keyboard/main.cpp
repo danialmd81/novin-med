@@ -4,8 +4,6 @@
 int main(int argc, char* argv[])
 {
 	qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-	qputenv("QT_VIRTUALKEYBOARD_LAYOUT_PATH", QByteArray("/home/danial/Code/keyboard/QtQuick/VirtualKeyboard/Layouts"));
-	qputenv("QT_VIRTUALKEYBOARD_LANGUAGES", QByteArray("en_US,fa_FA"));
 
 	// Select a custom Virtual Keyboard style QML.
 	// This must be set before the keyboard QML is loaded.
@@ -13,6 +11,8 @@ int main(int argc, char* argv[])
 	// qputenv("QT_VIRTUALKEYBOARD_STYLE", QByteArray("qrc:/KeyboardStyle.qml"));
 
 	QGuiApplication app(argc, argv);
+	QString layoutPath = QGuiApplication::applicationDirPath() + "/../../QtQuick/VirtualKeyboard/Layouts";
+	qputenv("QT_VIRTUALKEYBOARD_LAYOUT_PATH", layoutPath.toUtf8());
 
 	QQmlApplicationEngine engine;
 	engine.addImportPath(QGuiApplication::applicationDirPath() + "/../../");

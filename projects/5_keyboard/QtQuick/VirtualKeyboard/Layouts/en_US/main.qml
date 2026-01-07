@@ -204,6 +204,7 @@ KeyboardLayout {
     }
     KeyboardRow {
         SymbolModeKey {
+            displayText: "?123"
             weight: functionKeyWidth
             Layout.fillWidth: false
         }
