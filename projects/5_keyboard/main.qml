@@ -52,7 +52,7 @@ Window {
     // - For a custom QML style file, the robust approach is to set the environment
     //   variable *before* QML loads (see main.cpp): QT_VIRTUALKEYBOARD_STYLE.
     Component.onCompleted: {
-        VirtualKeyboardSettings.styleName = "test";
+        VirtualKeyboardSettings.styleName = "laser-scanner";
     }
 
     // The actual on-screen keyboard UI
