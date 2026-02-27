@@ -13,7 +13,9 @@ int main(int argc, char* argv[])
 	engine.addImportPath(QGuiApplication::applicationDirPath() + "/../../");
 	const QUrl url(QStringLiteral("qrc:/keyboard/main.qml"));
 	QObject::connect(
-		&engine, &QQmlApplicationEngine::objectCreated, &app,
+		&engine,
+		&QQmlApplicationEngine::objectCreated,
+		&app,
 		[url](QObject* obj, const QUrl& objUrl)
 		{
 			if (!obj && url == objUrl)
