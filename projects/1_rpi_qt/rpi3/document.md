@@ -14,10 +14,10 @@ header-includes:
   - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,breakanywhere,fontsize=\footnotesize,commandchars=\\\{\},breaksymbolleft={},breaksymbolright={}}
   - \makeatletter
   - \renewcommand{\maketitle}{
-      \begin{center}
-        {\LARGE \@title \par}
-        {\large \@date \par}
-      \end{center}
+    \begin{center}
+    {\LARGE \@title \par}
+    {\large \@date \par}
+    \end{center}
     }
   - \makeatother
 ---
@@ -109,9 +109,18 @@ make install
 git clone git://code.qt.io/qt/qtbase.git -b 5.12
 cd qtbase
 ``` -->
+
 ### qt-everywhere-src-5.12.11.tar.xz
 
 downloaded and extracted.
+
+test: add
+
+```sh
+QMAKE_LFLAGS += -Wl,-rpath,/opt/vc/lib -Wl,-rpath,/usr/local/qt5pi/lib
+```
+
+to `qmakce.conf` for fixing shader problem.
 
 #### Configure Qt for Cross-Compilation
 
@@ -165,7 +174,7 @@ scp qopenglwidget root@rpi3device:/home/pi
 QMAKE_LFLAGS += -Wl,-rpath,/opt/vc/lib -Wl,-rpath,/usr/local/qt5pi/lib
 ```
 
- to `.pro` file for setting vc libraries path above arm-gnueabihf libraries path (EGLFS ES2)
+to `.pro` file for setting vc libraries path above arm-gnueabihf libraries path (EGLFS ES2)
 
 - For low resolution issues, add `disable_overscan=1` to `/boot/config.txt` and use `tvservice`/`fbset` to set resolution.
 - Enable Qt logging for debugging:

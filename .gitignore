@@ -37,3 +37,5 @@ projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10-sysroot
 projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.00
 projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.01
 projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.02
+projects/5_cross_compile/rockchip/YY3568/qt5-build
+projects/5_cross_compile/rockchip/YY3568/qt-everywhere-src-*

@@ -1,0 +1,3 @@
+cat YY3568-Debian10.tar.gz.0* | tar -xzv
+cd YY3568-Debian
+git reset --hard HEAD
