@@ -11,6 +11,11 @@
 .qtcreator/
 build/
 ignore/
+sysroot/
+qt-host/
+qt-raspi/
+qt-hostbuild/
+qtpi-build/
 
 projects/1_rpi_qt/InstallerApp/
 projects/1_rpi_qt/qt-everywhere-src-5.12.11
@@ -39,3 +44,4 @@ projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.01
 projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.02
 projects/5_cross_compile/rockchip/YY3568/qt5-build
 projects/5_cross_compile/rockchip/YY3568/qt-everywhere-src-*
+projects/5_cross_compile/rockchip/YY3568/qt5-cross-compile-qmake

@@ -6,6 +6,7 @@ TOOLCHAIN="/home/danial/Code/novin-med/projects/5_cross_compile/rockchip/YY3568/
 CONFIGURE="/home/danial/Code/novin-med/projects/5_cross_compile/rockchip/YY3568/qt-everywhere-src-5.15.19/configure"
 HOSTPREFIX="/home/danial/Code/novin-med/projects/5_cross_compile/rockchip/YY3568/qt5-cross-compile-qmake"
 PREFIX="/usr/local/qt5"
+EXTPREFIX="/home/danial/Code/novin-med/projects/5_cross_compile/rockchip/YY3568/qt5-cross-compile-sysroot"
 
 # CRITICAL: Force pkg-config to use sysroot paths (i doubt that)
 export PKG_CONFIG_DIR=""
