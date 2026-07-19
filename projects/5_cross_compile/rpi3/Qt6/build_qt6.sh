@@ -18,7 +18,7 @@ set -e
 ###############################################
 
 # Path to the Linaro toolchain (must contain bin/arm-linux-gnueabihf-*)
-TOOLCHAIN_DIR="${HOME}/linaro-arm-linux-gnueabihf-7.5.0" # <-- edit
+TOOLCHAIN_DIR="${HOME}/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf"
 
 # Remote Raspberry‑Pi device (SSH reachable)
 RPI_HOST="root@rpi3device"
@@ -27,9 +27,8 @@ RPI_HOST="root@rpi3device"
 SYSROOT_DIR="$(pwd)/sysroot"
 
 # Qt source archive (you can also use a git clone)
-QT_VERSION="6.10.3"
+QT_VERSION="6.11.1"
 QT_TAR="qt-everywhere-src-${QT_VERSION}.tar.xz"
-QT_URL="https://download.qt.io/archive/qt/6.10/${QT_VERSION}/single/${QT_TAR}"
 QT_SRC_DIR="qt-everywhere-src-${QT_VERSION}"
 
 # Build and install directories (absolute paths)
@@ -58,10 +57,8 @@ fetch_qt_source() {
 		msg "Qt source already present: ${QT_SRC_DIR}"
 		return
 	fi
-	msg "Downloading Qt ${QT_VERSION}..."
-	curl -L "${QT_URL}" -o "${QT_TAR}"
+	msg "add Qt ${QT_VERSION} source tar"
 	tar -xf "${QT_TAR}"
-	rm -f "${QT_TAR}"
 	msg "Qt source extracted to ${QT_SRC_DIR}"
 }
 
@@ -95,15 +92,14 @@ configure_qt() {
 		-device-option CROSS_COMPILE=${CROSS_COMPILE} \
 		-sysroot "${SYSROOT_DIR}" \
 		-opensource -confirm-license \
-		-make libs \
 		-skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine \
 		-nomake examples -nomake tests \
 		-prefix "${INSTALL_PREFIX}" \
-		-hostprefix "${HOST_PREFIX}" \
+		-qt-host-path "${HOST_PREFIX}" \
 		-extprefix "${INSTALL_PREFIX}" \
 		-pkg-config \
 		-no-use-gold-linker \
-		-v
+		-DQT_HOST_PATH="${HOST_PREFIX}"
 
 	popd >/dev/null
 }
