@@ -9,12 +9,10 @@
 ## 2. Create and Sync Sysroot
 
 ```sh
-mkdir sysroot sysroot/usr sysroot/opt
+mkdir sysroot sysroot/usr
 rsync -avz root@rpi3device:/lib sysroot
 rsync -avz root@rpi3device:/usr/include sysroot/usr
 rsync -avz root@rpi3device:/usr/lib sysroot/usr
-rsync -avz root@rpi3device:/opt/vc sysroot/opt
-rsync -avz root@rpi3device:/usr/local/qt5pi sysroot/usr/local/qt5pi
 ```
 
 ## 3. Fix Sysroot Symlinks
