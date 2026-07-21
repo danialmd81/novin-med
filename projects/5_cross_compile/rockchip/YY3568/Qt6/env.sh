@@ -7,23 +7,25 @@
 DEVICE_MKSPEC="linux-aarch64-gnu-g++"
 
 # Cross compiler prefix matching your sysroot triplet
-CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
+# export CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
+# export CROSS_COMPILE="$(pwd)/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+export CROSS_COMPILE="$(pwd)/gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+# export CROSS_COMPILE="$(pwd)/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-"
 
 # EGLFS backend for RK3568 Mali GPU
-# Run `ls /usr/lib/aarch64-linux-gnu/libmali*` in sysroot to check.
-# If libmali-bifrost-g52-m400-gbm.so exists -> use eglfs_gbm
 EGLFS_DEVICE_INTEGRATION="eglfs_gbm"
-# EGLFS_DEVICE_INTEGRATION="eglfs_mali"
 
 # Remote board (SSH reachable)
 RK_HOST="root@rk3568device"
 
 # Sysroot directory
-SYSROOT_DIR="${HOME}/rk-deb10-sysroot"
+# export SYSROOT_DIR="${HOME}/rk-deb10-sysroot"
+export SYSROOT_DIR="${HOME}/Code/novin-med/projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10-sysroot"
 
 # Qt Version & Paths
-QT_VERSION="6.9.3"
-QT_SRC_DIR="${HOME}/qt-everywhere-src-${QT_VERSION}"
+QT_VERSION="6.2.4"
+# QT_VERSION="6.9.3"
+QT_SRC_DIR="$(pwd)/qt-everywhere-src-${QT_VERSION}"
 QT_HOST_PATH="${HOME}/Qt/${QT_VERSION}/gcc_64"
 
 # Build / staging / final install directories

@@ -5,31 +5,31 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
 # Sysroot configuration
-set(TARGET_SYSROOT "$ENV{HOME}/rk-deb10-sysroot")
+set(TARGET_SYSROOT $ENV{SYSROOT_DIR})
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 set(CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT})
 
 # PkgConfig environment variables targeting sysroot
-set(ENV{PKG_CONFIG_SYSROOT_DIR} "${TARGET_SYSROOT}")
-set(ENV{PKG_CONFIG_LIBDIR} "${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig:${TARGET_SYSROOT}/usr/share/pkgconfig:${TARGET_SYSROOT}/usr/lib/pkgconfig")
-set(ENV{PKG_CONFIG_PATH} "${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig")
+set(ENV{PKG_CONFIG_PATH} ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig)
+set(ENV{PKG_CONFIG_LIBDIR} ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig:${CMAKE_SYSROOT}/usr/lib/pkgconfig)
+set(ENV{PKG_CONFIG_SYSROOT_DIR} ${CMAKE_SYSROOT})
 
-# Cross Compilers (System Default g++ 11 or g++ 9 cross-toolchain)
-set(TOOLCHAIN_PREFIX "/usr/bin/aarch64-linux-gnu-")
+# Cross Compilers
+set(TOOLCHAIN_PREFIX $ENV{CROSS_COMPILE})
 set(CMAKE_C_COMPILER "${TOOLCHAIN_PREFIX}gcc")
 set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++")
 
-set(CMAKE_AR "${TOOLCHAIN_PREFIX}ar" CACHE FILEPATH "Archiver")
-set(CMAKE_RANLIB "${TOOLCHAIN_PREFIX}ranlib" CACHE FILEPATH "Ranlib")
-set(CMAKE_STRIP "${TOOLCHAIN_PREFIX}strip" CACHE FILEPATH "Strip")
+# Fix: Add -B flags so GCC finds crt1.o, crti.o, crtn.o inside Debian multiarch sysroot
+set(SYSROOT_DIR_FLAGS "--sysroot=${CMAKE_SYSROOT} -B${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -B${CMAKE_SYSROOT}/lib/aarch64-linux-gnu")
 
-# C/C++ Flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${TARGET_SYSROOT}/usr/include -I${TARGET_SYSROOT}/usr/include/aarch64-linux-gnu")
+set(CMAKE_C_FLAGS "${SYSROOT_DIR_FLAGS} -I${CMAKE_SYSROOT}/usr/include -I${CMAKE_SYSROOT}/usr/include/aarch64-linux-gnu")
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 
 set(QT_COMPILER_FLAGS "-march=armv8-a")
-set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe -DNDEBUG")
-set(QT_LINKER_FLAGS "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -L${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu -L${TARGET_SYSROOT}/lib/aarch64-linux-gnu -Wl,-rpath-link,${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,${TARGET_SYSROOT}/lib/aarch64-linux-gnu")
+set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
+
+# Linker flags including -B search hints
+set(QT_LINKER_FLAGS "${SYSROOT_DIR_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -L${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -L${CMAKE_SYSROOT}/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/lib/aarch64-linux-gnu")
 
 # Search behaviors
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -64,23 +64,28 @@ function(cmake_initialize_per_config_variable _PREFIX _DOCSTRING)
 endfunction()
 
 # Explicit Library and Header Overrides for EGLFS / GBM on RK3568
-set(GL_INC_DIR ${TARGET_SYSROOT}/usr/include)
-set(GL_LIB_DIR ${TARGET_SYSROOT}/usr/lib/aarch64-linux-gnu)
+set(XCB_PATH_VARIABLE ${TARGET_SYSROOT})
+
+set(GL_INC_DIR ${CMAKE_SYSROOT}/usr/include)
+set(GL_LIB_DIR ${TARGET_SYSROOT}:${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/:${CMAKE_SYSROOT}/usr:${CMAKE_SYSROOT}/usr/lib)
 
 set(EGL_INCLUDE_DIR ${GL_INC_DIR})
-set(EGL_LIBRARY ${GL_LIB_DIR}/libEGL.so)
+set(EGL_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libEGL.so)
 
 set(OPENGL_INCLUDE_DIR ${GL_INC_DIR})
-set(OPENGL_opengl_LIBRARY ${GL_LIB_DIR}/libOpenGL.so)
+set(OPENGL_opengl_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libOpenGL.so)
 
 set(GLESv2_INCLUDE_DIR ${GL_INC_DIR})
-set(GLESv2_LIBRARY ${GL_LIB_DIR}/libGLESv2.so)
+set(GLIB_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libGLESv2.so)
 
 set(gbm_INCLUDE_DIR ${GL_INC_DIR})
-set(gbm_LIBRARY ${GL_LIB_DIR}/libgbm.so)
+set(gbm_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libgbm.so)
 
 set(Libdrm_INCLUDE_DIR ${GL_INC_DIR})
-set(Libdrm_LIBRARY ${GL_LIB_DIR}/libdrm.so)
+set(Libdrm_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libdrm.so)
 
 set(XCB_XCB_INCLUDE_DIR ${GL_INC_DIR})
-set(XCB_XCB_LIBRARY ${GL_LIB_DIR}/libxcb.so)
+set(XCB_XCB_LIBRARY ${XCB_PATH_VARIABLE}/usr/lib/aarch64-linux-gnu/libxcb.so)
+
+list(APPEND CMAKE_LIBRARY_PATH ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu)
+list(APPEND CMAKE_PREFIX_PATH "/usr/lib/aarch64-linux-gnu/cmake")

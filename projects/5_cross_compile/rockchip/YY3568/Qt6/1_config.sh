@@ -25,7 +25,7 @@ pushd "${BUILD_DIR}" >/dev/null
 	-extprefix "${STAGING_DIR}" \
 	-prefix "${INSTALL_PREFIX}" \
 	-opensource -confirm-license \
-	-skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -skip qtgrpc -skip qtopcua \
+	-skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -skip qtgrpc -skip qtopcua -skip qtdoc -skip qtwebview \
 	-nomake examples -nomake tests \
 	-pkg-config \
 	-no-use-gold-linker \
