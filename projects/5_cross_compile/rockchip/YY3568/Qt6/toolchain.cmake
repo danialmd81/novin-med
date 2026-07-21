@@ -29,7 +29,7 @@ set(QT_COMPILER_FLAGS "-march=armv8-a")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
 
 # Linker flags including -B search hints
-set(QT_LINKER_FLAGS "${SYSROOT_DIR_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -L${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -L${CMAKE_SYSROOT}/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/lib/aarch64-linux-gnu")
+set(QT_LINKER_FLAGS "${SYSROOT_DIR_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -L${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -L${CMAKE_SYSROOT}/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/lib/aarch64-linux-gnu  -static-libstdc++")
 
 # Search behaviors
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
