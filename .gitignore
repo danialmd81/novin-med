@@ -13,10 +13,12 @@ build/
 build-*/
 ignore/
 sysroot/
-qt-host/
-qt6-rpi/
-qt-hostbuild/
-qtpi-build/
+qt*-host/
+qt*-build/
+qt*-cross*/
+qt*-rpi/
+qt*-hostbuild/
+qtpi*-build/
 qt-everywhere-src-*/
 
 projects/1_rpi_qt/InstallerApp/
