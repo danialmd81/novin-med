@@ -13,7 +13,7 @@ build/
 ignore/
 sysroot/
 qt-host/
-qt-raspi/
+qt6-rpi/
 qt-hostbuild/
 qtpi-build/
 qt-everywhere-src-*/
