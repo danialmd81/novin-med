@@ -16,8 +16,8 @@ set(ENV{PKG_CONFIG_SYSROOT_DIR} ${CMAKE_SYSROOT})
 
 # Cross Compilers
 set(TOOLCHAIN_PREFIX $ENV{CROSS_COMPILE})
-set(CMAKE_C_COMPILER "${TOOLCHAIN_PREFIX}gcc")
-set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++")
+set(CMAKE_C_COMPILER "${TOOLCHAIN_PREFIX}gcc-9")
+set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++-9")
 
 # Fix: Add -B flags so GCC finds crt1.o, crti.o, crtn.o inside Debian multiarch sysroot
 set(SYSROOT_DIR_FLAGS "--sysroot=${CMAKE_SYSROOT} -B${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -B${CMAKE_SYSROOT}/lib/aarch64-linux-gnu")
