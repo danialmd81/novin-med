@@ -5,7 +5,7 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
 # Sysroot configuration
-set(TARGET_SYSROOT $ENV{SYSROOT_DIR})
+set(TARGET_SYSROOT "$ENV{HOME}/rk-deb10-sysroot")
 set(CMAKE_SYSROOT ${TARGET_SYSROOT})
 set(CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT})
 
@@ -15,11 +15,10 @@ set(ENV{PKG_CONFIG_LIBDIR} ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/pkgconfig:
 set(ENV{PKG_CONFIG_SYSROOT_DIR} ${CMAKE_SYSROOT})
 
 # Cross Compilers
-set(TOOLCHAIN_PREFIX $ENV{CROSS_COMPILE})
+set(TOOLCHAIN_PREFIX "/usr/bin/aarch64-linux-gnu-")
 set(CMAKE_C_COMPILER "${TOOLCHAIN_PREFIX}gcc-9")
 set(CMAKE_CXX_COMPILER "${TOOLCHAIN_PREFIX}g++-9")
 
-# Fix: Add -B flags so GCC finds crt1.o, crti.o, crtn.o inside Debian multiarch sysroot
 set(SYSROOT_DIR_FLAGS "--sysroot=${CMAKE_SYSROOT} -B${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -B${CMAKE_SYSROOT}/lib/aarch64-linux-gnu")
 
 set(CMAKE_C_FLAGS "${SYSROOT_DIR_FLAGS} -I${CMAKE_SYSROOT}/usr/include -I${CMAKE_SYSROOT}/usr/include/aarch64-linux-gnu")
@@ -28,7 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
 set(QT_COMPILER_FLAGS "-march=armv8-a")
 set(QT_COMPILER_FLAGS_RELEASE "-O2 -pipe")
 
-# Linker flags including -B search hints
+# Linker flags
 set(QT_LINKER_FLAGS "${SYSROOT_DIR_FLAGS} -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -L${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -L${CMAKE_SYSROOT}/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu -Wl,-rpath-link,${CMAKE_SYSROOT}/lib/aarch64-linux-gnu  -static-libstdc++")
 
 # Search behaviors
