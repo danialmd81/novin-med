@@ -1,3 +1,6 @@
 [submodule "projects/laserscanner"]
 	path = projects/laserscanner
 	url = https://github.com/danialmd81/laserscanner.git
+[submodule "projects/flowend"]
+	path = projects/flowend
+	url = https://github.com/danialmd81/flowend.git
