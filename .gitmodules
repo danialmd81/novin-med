@@ -1,0 +1,3 @@
+[submodule "projects/laserscanner"]
+	path = projects/laserscanner
+	url = https://github.com/danialmd81/laserscanner.git
