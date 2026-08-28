@@ -25,6 +25,8 @@ pushd "${BUILD_DIR}" >/dev/null
 	-extprefix "${STAGING_DIR}" \
 	-prefix "${INSTALL_PREFIX}" \
 	-opensource -confirm-license \
+	-qt-doubleconversion \
+	-qt-pcre \
 	-skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -skip qtgrpc -skip qtopcua -skip qtdoc -skip qtwebview \
 	-nomake examples -nomake tests \
 	-pkg-config \
@@ -34,4 +36,4 @@ pushd "${BUILD_DIR}" >/dev/null
 popd >/dev/null
 
 msg "Configure complete. Verify EGLFS and GBM capabilities in summary:"
-msg "  grep -A15 'EGLFS' ${BUILD_DIR}/config.summary"
+grep -A15 'EGLFS' ${BUILD_DIR}/config.summary
