@@ -16,16 +16,16 @@ EGLFS_DEVICE_INTEGRATION="eglfs_gbm"
 RK_HOST="root@rk"
 
 # Sysroot directory
-SYSROOT_DIR="${HOME}/rk-deb10-sysroot"
+SYSROOT_DIR="/home/danial/rk-deb10-sysroot"
 
 # Qt Version & Paths
 QT_VERSION="6.2.4"
-QT_SRC_DIR="${HOME}/qt-everywhere-src-${QT_VERSION}"
-QT_HOST_PATH="${HOME}/Qt/${QT_VERSION}/gcc_64"
+QT_SRC_DIR="/home/danial/qt-everywhere-src-${QT_VERSION}"
+QT_HOST_PATH="/home/danial/Qt/${QT_VERSION}/gcc_64"
 
 # Build / staging / final install directories
 BUILD_DIR="$(pwd)/build-qt6-rk-deb10"
-STAGING_DIR="${HOME}/qt6-rk-deb10"
+STAGING_DIR="/home/danial/qt6-rk-deb10"
 INSTALL_PREFIX="/usr/local/qt6rk"
 TOOLCHAIN_FILE="$(pwd)/toolchain.cmake"
 

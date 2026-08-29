@@ -15,7 +15,7 @@ ensure_toolchain
 
 msg "Building Qt (this may take a while)"
 pushd "${BUILD_DIR}" >/dev/null
-cmake --build . --parallel
+cmake --build .
 popd >/dev/null
 
 msg "Build done. Next: ./install.sh"
