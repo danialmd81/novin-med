@@ -39,7 +39,9 @@ podman run --rm -it \
   rk3568-deb10-cross:latest \
   bash
 
-/home/danial/qt6-rk-deb11/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-compile/
+rm -rf laserscanner/build/cross-compile/
+
+/home/danial/qt6-rk-deb10/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-compile/
 
 cmake --build laserscanner/build/cross-compile
 ```
