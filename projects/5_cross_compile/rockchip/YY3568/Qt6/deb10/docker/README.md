@@ -41,7 +41,7 @@ podman run --rm -it \
 
 rm -rf laserscanner/build/cross-compile/
 
-/home/danial/qt6-rk-deb10/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-compile/
+/home/danial/qt6-rk-deb10/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-compile/ -DOpenCV_DIR=/home/danial/opencv-rk/lib/cmake/opencv4
 
 cmake --build laserscanner/build/cross-compile
 ```

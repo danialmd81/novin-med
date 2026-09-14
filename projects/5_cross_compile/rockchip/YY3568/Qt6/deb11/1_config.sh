@@ -6,10 +6,6 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/env.sh"
 
-ensure_toolchain
-check_qt_source
-check_sysroot
-
 msg "Configuring Qt for RK3568 cross-compilation..."
 mkdir -p "${BUILD_DIR}" "${STAGING_DIR}"
 pushd "${BUILD_DIR}" >/dev/null

@@ -36,4 +36,6 @@ RUN echo "deb http://archive.debian.org/debian buster main" > /etc/apt/sources.l
 RUN curl -fsSL https://github.com/Kitware/CMake/releases/download/v3.26.5/cmake-3.26.5-linux-x86_64.tar.gz | \
     tar --strip-components=1 -xz -C /usr/local
 
+RUN ln -sf /usr/bin/make /usr/bin/gmake
+
 WORKDIR /workspace

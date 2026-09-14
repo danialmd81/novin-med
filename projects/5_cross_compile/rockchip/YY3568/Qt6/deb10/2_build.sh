@@ -11,8 +11,6 @@ if [[ ! -d "${BUILD_DIR}" ]]; then
 	exit 1
 fi
 
-ensure_toolchain
-
 msg "Building Qt (this may take a while)"
 pushd "${BUILD_DIR}" >/dev/null
 cmake --build .

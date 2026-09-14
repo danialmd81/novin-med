@@ -10,10 +10,7 @@ DEVICE_MKSPEC="linux-aarch64-gnu-g++"
 CROSS_COMPILE="/usr/bin/aarch64-linux-gnu-"
 
 # EGLFS backend for RK3568 Mali GPU
-EGLFS_DEVICE_INTEGRATION="eglfs_gbm"
-
-# Remote board (SSH reachable)
-RK_HOST="root@rk"
+EGLFS_DEVICE_INTEGRATION="eglfs_kms"
 
 # Sysroot directory
 SYSROOT_DIR="/home/danial/rk-deb11-sysroot"
@@ -30,34 +27,8 @@ INSTALL_PREFIX="/usr/local/qt6rk"
 TOOLCHAIN_FILE="$(pwd)/toolchain.cmake"
 
 ###############################################
-# Shared Helpers & Environment Fixes
+# Shared Helpers
 ###############################################
 msg() {
 	echo -e "\033[1;34m[qt6-rk-deb11]\033[0m $*"
-}
-
-ensure_toolchain() {
-	if [[ ! -x "${CROSS_COMPILE}gcc" ]]; then
-		msg "Toolchain not found at ${CROSS_COMPILE}gcc."
-		msg "Install with: sudo apt install g++-aarch64-linux-gnu"
-		exit 1
-	fi
-	export PATH="$(dirname "${CROSS_COMPILE}"):${PATH}"
-	msg "Toolchain OK ($(${CROSS_COMPILE}g++ --version | head -1))"
-}
-
-check_qt_source() {
-	if [[ ! -d "${QT_SRC_DIR}" ]]; then
-		msg "Missing source folder: ${QT_SRC_DIR}"
-		exit 1
-	fi
-	msg "Qt source present: ${QT_SRC_DIR}"
-}
-
-check_sysroot() {
-	if [[ ! -d "${SYSROOT_DIR}" ]]; then
-		msg "Sysroot not found at ${SYSROOT_DIR}."
-		exit 1
-	fi
-	msg "Using sysroot ${SYSROOT_DIR}"
 }
