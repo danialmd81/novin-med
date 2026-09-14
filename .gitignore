@@ -42,11 +42,11 @@ projects/1_rpi_qt/rpi4/qt-raspi/
 projects/1_rpi_qt/rpi4/rpi-sysroot/
 projects/1_rpi_qt/rpi4/toolchain.cmake
 
-projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10
 projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10-sysroot
-projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.00
-projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.01
-projects/5_cross_compile/rockchip/YY3568/YY3568-Debian10.tar.gz.02
 projects/5_cross_compile/rockchip/YY3568/qt5-build
 projects/5_cross_compile/rockchip/YY3568/qt-everywhere-src-*
 projects/5_cross_compile/rockchip/YY3568/qt5-cross-compile-qmake
+projects/6_rk_image/YY3568-Debian10
+projects/6_rk_image/YY3568-Debian10.tar.gz.00
+projects/6_rk_image/YY3568-Debian10.tar.gz.01
+projects/6_rk_image/YY3568-Debian10.tar.gz.02
