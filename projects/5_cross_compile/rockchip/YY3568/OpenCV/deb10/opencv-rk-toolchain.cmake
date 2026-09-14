@@ -14,8 +14,8 @@ set(CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT})
 # =========================
 # Cross compiler
 # =========================
-set(CMAKE_C_COMPILER "$ENV{CROSS_COMPILE}gcc-9")
-set(CMAKE_CXX_COMPILER "$ENV{CROSS_COMPILE}g++-9")
+set(CMAKE_C_COMPILER "$ENV{CROSS_COMPILE}gcc")
+set(CMAKE_CXX_COMPILER "$ENV{CROSS_COMPILE}g++")
 
 # =========================
 # Compiler flags

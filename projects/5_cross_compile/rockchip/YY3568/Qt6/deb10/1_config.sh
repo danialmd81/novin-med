@@ -23,7 +23,7 @@ pushd "${BUILD_DIR}" >/dev/null
 	-opensource -confirm-license \
 	-qt-doubleconversion \
 	-qt-pcre \
-	-skip qtscript -skip qtwayland -skip qtdatavis3d -skip qtwebengine -skip qtgrpc -skip qtopcua -skip qtdoc -skip qtwebview \
+	-skip qtdoc -skip qtdatavis3d -skip qtgrpc -skip qtopcua -skip qtscript -skip qtwayland -skip qtwebengine -skip qtwebview \
 	-nomake examples -nomake tests \
 	-pkg-config \
 	-no-use-gold-linker \
@@ -31,5 +31,6 @@ pushd "${BUILD_DIR}" >/dev/null
 
 popd >/dev/null
 
-msg "Configure complete. Verify EGLFS and GBM capabilities in summary:"
-grep -A15 'EGLFS' ${BUILD_DIR}/config.summary
+msg "Configure complete. Verifying EGLFS and Multimedia capabilities in summary:"
+grep -A15 'EGLFS' "${BUILD_DIR}/config.summary" || true
+grep -A5 'Qt Multimedia' "${BUILD_DIR}/config.summary" || true
