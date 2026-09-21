@@ -41,7 +41,7 @@ podman run --rm -it \
 
 rm -rf laserscanner/build/cross-build-deb10/
 
-/home/danial/qt6-rk-deb10/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-build-deb10/ -DOpenCV_DIR=/home/danial/opencv-rk-deb10/lib/cmake/opencv4
+/home/danial/qt6-rk-deb10/bin/qt-cmake -S laserscanner/ -B laserscanner/build/cross-build-deb10/ -DCMAKE_BUILD_TYPE=Release -DOpenCV_DIR=/home/danial/opencv-rk-deb10/lib/cmake/opencv4
 
 cmake --build laserscanner/build/cross-build-deb10
 ```
