@@ -4,3 +4,6 @@
 [submodule "projects/flowend"]
 	path = projects/flowend
 	url = https://github.com/danialmd81/flowend.git
+[submodule "projects/hightesla"]
+	path = projects/hightesla
+	url = https://github.com/danialmd81/hightesla.git
