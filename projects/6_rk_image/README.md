@@ -15,7 +15,10 @@ Complete step-by-step instructions to build custom Linux firmware featuring:
 cat YY3568-Debian10.tar.gz.0* | tar -xzv
 cd YY3568-Debian
 git reset --hard HEAD
+
 ```
+
+---
 
 ## 1. Container Setup on Host (Podman)
 
@@ -26,21 +29,22 @@ Run these commands on your Linux host machine to import and launch the SDK conta
 Imports the provided build environment archive into your local container storage.
 
 ```bash
-podman import YY3568-Debian10.tar.gz rk3568-builder:latest
+podman import docker/youyeetoo-ubuntu20.04.tar yyt-ubuntu:20.04
 
+```
 
 ### 1.2 Start the Build Container
 
 Launches the container matching your host user ID/GID, keeping directory ownership intact while mounting the SDK workspace (`6_rk_image`) to `/home/youyeetoo`.
 
 ```bash
-podman run -it \
-  --name rk_builder \
-  --user $(id -u):$(id -g) \
-  --userns=keep-id \
-  -v $(pwd)/6_rk_image:/home/youyeetoo:Z \
-  -w /home/youyeetoo \
-  rk3568-builder:latest /bin/bash
+podman run -d -it --name youyeetoo \
+  --privileged \
+  --userns=keep-id:uid=1000,gid=1000 \
+  -v "$(pwd)":/home/youyeetoo:z \
+  yyt-ubuntu:20.04 /bin/bash
+
+podman exec -u youyeetoo -ti -w /home/youyeetoo youyeetoo /bin/bash
 
 ```
 
@@ -78,7 +82,7 @@ Selects the newly created board configuration as the active target.
 
 ```
 
-*(Select the option corresponding to `YY3568-Buildroot.mk`, typically `10`).*
+_(Select the option corresponding to `YY3568-Buildroot.mk`, typically `10`)._
 
 ---
 
@@ -106,15 +110,14 @@ Set the following options in `menuconfig`:
 
 - **Rockchip Hardware Drivers (`Target packages ---> Rockchip BSP packages --->`)**
 - `[*] rockchip libmali`
-- `display platform (gbm) --->` *(Must be **`gbm`**, NOT `wayland`)*
-
-- `[*] Rockchip RGA lib for linux` *(2D hardware blitter/rotator engine)*
+- `display platform (gbm) --->` _(Must be **`gbm`**, NOT `wayland`)_
+- `[*] Rockchip RGA lib for linux`
 - `[*] MPP(Multimedia Processing Platform)`
 - `[*] rkwifibt`
 
 - **Graphic Engine & Qt5 (`Target packages ---> Graphic libraries and applications --->`)**
-- `[*] kmscube` *(DRM/KMS hardware rendering test app)*
-- `[ ] weston` *(Must be unchecked to prevent DRM device conflicts)*
+- `[*] kmscube`
+- `[ ] weston` _(Must be unchecked to prevent DRM device conflicts)_
 - `[*] Qt5 --->` -> `[*] qt5base --->`:
 - `[*] gui module`
 - `[*] widgets module`
@@ -132,7 +135,7 @@ Set the following options in `menuconfig`:
 - `[*] qt5imageformats`
 - `[*] qt5multimedia`
 - `[*] qt5quickcontrols2`
-- `[*] qt5tools` *(Provides `qtdiag`, `qtpaths`)*
+- `[*] qt5tools`
 
 - **OpenCV 3 (`Target packages ---> Libraries ---> Graphics ---> opencv3`)**
 - Core modules: `[*] highgui`, `[*] imgcodecs`, `[*] imgproc`, `[*] video`, `[*] videoio`
@@ -220,26 +223,92 @@ sed -i 's/#define DISPLAY_SWITCH 0/#define DISPLAY_SWITCH 2/' kernel/arch/arm64/
 
 ---
 
-## 6. Build the Firmware
+## 6. Apply Upstream BSP Fixes
 
-Compiles the bootloader, kernel, Buildroot rootfs, and bundles them into partition images.
+Run these patches inside `/home/youyeetoo` to prevent known vendor package compilation halts.
 
-### 6.1 Run Main Compilation
+### 6.1 Fix bzip2 Download Mirror (Dead Domain Fix)
 
 ```bash
-./build.sh 2>&1 | tee build.log
+mkdir -p buildroot/dl/bzip2
+wget -c [https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz](https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz) -O buildroot/dl/bzip2-1.0.6.tar.gz
+cp buildroot/dl/bzip2-1.0.6.tar.gz buildroot/dl/bzip2/
+
+```
+
+### 6.2 Fix Rockchip MPP Version Template
+
+```bash
+mkdir -p external/mpp/build/cmake
+cat << 'EOF' > external/mpp/build/cmake/version.in
+#ifndef __MPP_VERSION_H__
+#define __MPP_VERSION_H__
+
+#define MPP_VER_HIST_COUNT 1
+#define MPP_VER_HIST_CNT   1
+#define MPP_VERSION        "release"
+#define MPP_VER_GIT_AUTHOR "rockchip"
+#define MPP_VER_GIT_DATE   "2026-01-01"
+#define MPP_VER_GIT_BRANCH "release"
+#define MPP_VER_GIT_COMMIT "release"
+
+#define MPP_VER_HIST_0 "Initial release"
+#define MPP_VER_HIST_1 "none"
+#define MPP_VER_HIST_2 "none"
+#define MPP_VER_HIST_3 "none"
+#define MPP_VER_HIST_4 "none"
+#define MPP_VER_HIST_5 "none"
+#define MPP_VER_HIST_6 "none"
+#define MPP_VER_HIST_7 "none"
+#define MPP_VER_HIST_8 "none"
+#define MPP_VER_HIST_9 "none"
+
+#endif
+EOF
+
+```
+
+### 6.3 Fix RKNPU2 Library Path Layout
+
+```bash
+if [ -d "external/rknpu2/runtime/RK356X/Linux" ] && [ ! -d "external/rknpu2/Linux" ]; then
+    ln -sf runtime/RK356X/Linux external/rknpu2/Linux
+fi
 
 ```
 
 ---
 
-## 7. Packaging `update.img`
+## 7. Build the Firmware
 
-Fixes the Rockchip packaging link dependencies and builds the unified flashable file.
+### 7.1 Compile U-Boot, Kernel, and Base Partition Images
 
-### 7.1 Setup Packaging Symlinks
+```bash
+cd /home/youyeetoo
+./build.sh 2>&1 | tee build.log
 
-Creates links to the chip-specific packaging script and package-file description:
+```
+
+### 7.2 Compile the Target Buildroot Root Filesystem
+
+Compile the actual rootfs with your selected Qt5 and driver configuration:
+
+```bash
+cd /home/youyeetoo/buildroot
+make
+cd /home/youyeetoo
+
+```
+
+_Verification: Confirm `buildroot/output/images/rootfs.ext4` is created._
+
+---
+
+## 8. Packaging `update.img`
+
+### 8.1 Setup Packaging Symlinks
+
+Link the Rockchip packaging tools:
 
 ```bash
 cd /home/youyeetoo/tools/linux/Linux_Pack_Firmware/rockdev
@@ -254,23 +323,35 @@ ln -sf ../tools/linux/Linux_Pack_Firmware/rockdev/rk356x-package-file ./package-
 
 ```
 
-### 7.2 Generate Unified Firmware
+### 8.2 Link the Buildroot Rootfs (Prevent Debian Fallback)
+
+Ensure the packaging script points to the newly compiled Buildroot filesystem rather than the Debian image:
 
 ```bash
+cd /home/youyeetoo/rockdev
+rm -f rootfs.ext4 rootfs.img
+ln -sf ../buildroot/output/images/rootfs.ext4 ./rootfs.ext4
+ln -sf rootfs.ext4 ./rootfs.img
 cd /home/youyeetoo
+
+```
+
+### 8.3 Generate Unified Firmware
+
+```bash
 ./build.sh updateimg
 
 ```
 
-*Verification: Confirm `rockdev/update.img` is created.*
+_Verification: Confirm `rockdev/update.img` is created and has a size around **800 MB to 1.3 GB** (not 4.0 GB)._
 
 ---
 
-## 8. Flashing & Verification (Host Machine)
+## 9. Flashing & Verification (Host Machine)
 
 Execute on your host PC outside the container.
 
-### 8.1 Install `rkdeveloptool`
+### 9.1 Install `rkdeveloptool`
 
 ```bash
 sudo apt update
@@ -281,7 +362,7 @@ sudo cp build/rkdeveloptool /usr/local/bin/
 
 ```
 
-### 8.2 Flash Firmware
+### 9.2 Flash Firmware
 
 1. Connect the YY3568 USB Type-C OTG port to your PC.
 2. Hold **Recovery**, press **Reset**, wait 3 seconds, and release.
@@ -290,16 +371,17 @@ sudo cp build/rkdeveloptool /usr/local/bin/
 ```bash
 cd 6_rk_image/rockdev
 sudo rkdeveloptool ld
-sudo rkdeveloptool db MiniLoaderAll.bin    # (Only required if in Maskrom mode)
+# sudo rkdeveloptool db MiniLoaderAll.bin    # (Only required if in Maskrom mode)
 sudo rkdeveloptool wl 0x0 update.img
 sudo rkdeveloptool rd
 
 ```
 
-### 8.3 On-Board Validation
+### 9.3 On-Board Validation
 
-After boot, run the following commands on the board terminal:
+After boot (`Welcome to RK356X Buildroot`), verify settings via serial or local terminal:
 
+- **EGLFS Environment:** `env | grep QT_QPA` (Should show `eglfs_kms` and `/etc/kms.conf`).
 - **Display Status:** `cat /sys/class/drm/card0-eDP-1/status` (Should read `connected`).
-- **GPU & DRM Test:** `kmscube` (A 3D cube should render on the screen).
-- **Qt Configuration:** `qtdiag` (Should show `eglfs_kms` active with `eDP-1` configured).
+- **GPU & DRM Test:** `kmscube` (A 3D cube should render smoothly on screen).
+- **Qt Apps & Rotation:** Run `qplayer` to confirm hardware acceleration and 90° rotation directly on `eDP-1`.
