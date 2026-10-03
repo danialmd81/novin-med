@@ -11,6 +11,8 @@ Complete step-by-step instructions to build custom Linux firmware featuring:
 
 ## 0. Extract the SDK Archive
 
+Run on your host machine to concatenate and decompress the multi-part archive:
+
 ```bash
 cat YY3568-Debian10.tar.gz.0* | tar -xzv
 cd YY3568-Debian
@@ -65,7 +67,7 @@ cp device/rockchip/rk356x/YY3568-Debian10.mk device/rockchip/rk356x/YY3568-Build
 
 ### 2.2 Switch Target Filesystem to Buildroot
 
-Replaces the Debian rootfs instruction with Buildroot and sets the default package file:
+Point the rootfs target to Buildroot and configure the packaging file:
 
 ```bash
 sed -i 's/export RK_ROOTFS_SYSTEM=debian/# export RK_ROOTFS_SYSTEM=debian/' device/rockchip/rk356x/YY3568-Buildroot.mk
@@ -82,7 +84,15 @@ Selects the newly created board configuration as the active target.
 
 ```
 
-_(Select the option corresponding to `YY3568-Buildroot.mk`, typically `10`)._
+Select the menu entry corresponding to `YY3568-Buildroot.mk` (typically combo `10`).
+
+Verify active configuration:
+
+```bash
+ls -l device/rockchip/.BoardConfig.mk
+cat device/rockchip/.BoardConfig.mk | grep RK_ROOTFS_SYSTEM
+
+```
 
 ---
 
@@ -93,7 +103,7 @@ Configures the cross-compilation toolchain, Mali GPU acceleration, Qt5 modules, 
 ### 3.1 Initialize and Open Menuconfig
 
 ```bash
-cd buildroot
+cd /home/youyeetoo/buildroot
 make rockchip_rk3568_defconfig
 make menuconfig
 
@@ -101,7 +111,7 @@ make menuconfig
 
 ### 3.2 Required Menu Settings
 
-Set the following options in `menuconfig`:
+Ensure the following options are selected:
 
 - **Toolchain (`Toolchain --->`)**
 - `[*] Enable C++ support`
@@ -117,7 +127,7 @@ Set the following options in `menuconfig`:
 
 - **Graphic Engine & Qt5 (`Target packages ---> Graphic libraries and applications --->`)**
 - `[*] kmscube`
-- `[ ] weston` _(Must be unchecked to prevent DRM device conflicts)_
+- `[ ] weston` _(Must be disabled to prevent DRM device conflicts)_
 - `[*] Qt5 --->` -> `[*] qt5base --->`:
 - `[*] gui module`
 - `[*] widgets module`
@@ -129,7 +139,7 @@ Set the following options in `menuconfig`:
 
 - `[*] Enable RGA`
 
-- Supporting Qt modules:
+- Additional Qt Modules:
 - `[*] qt5declarative` -> `[*] quick module`
 - `[*] qt5graphicaleffects`
 - `[*] qt5imageformats`
@@ -160,7 +170,7 @@ cd /home/youyeetoo
 
 ## 4. Display Output & Rotation Overlay
 
-Directs Qt5 to render directly over DRM/KMS to the eDP-1 connector with a 90-degree screen rotation.
+Directs Qt5 to render directly over DRM/KMS to the `eDP-1` connector rotated 90 degrees.
 
 ### 4.1 Create Overlay Directories
 
@@ -202,7 +212,17 @@ export QT_QPA_EGLFS_KMS_CONFIG=/etc/kms.conf
 export QT_QPA_EGLFS_INTEGRATION=eglfs_kms
 export QT_QPA_ENABLE_TERMINAL_KEYBOARD=1
 EOF
+
 chmod +x buildroot/board/rockchip/common/base/etc/profile.d/qt_eglfs.sh
+
+```
+
+### 4.4 Verify Overlay Registration
+
+Confirm that `board/rockchip/common/base` is present in the active overlay paths:
+
+```bash
+grep "BR2_ROOTFS_OVERLAY" buildroot/.config
 
 ```
 
@@ -210,37 +230,45 @@ chmod +x buildroot/board/rockchip/common/base/etc/profile.d/qt_eglfs.sh
 
 ## 5. Kernel Device Tree (DTS) Configuration
 
-Switches display routing from MIPI-DSI to eDP-1 in the kernel.
-
-### 5.1 Set `DISPLAY_SWITCH` to eDP
-
-Updates line 11 of the device tree to activate `rk3568-vp1-edp-1080p.dtsi`:
+Switch display multiplexing from MIPI-DSI to eDP-1:
 
 ```bash
 sed -i 's/#define DISPLAY_SWITCH 0/#define DISPLAY_SWITCH 2/' kernel/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dts
 
 ```
 
+_Verification: Run `sed -n '10,35p' kernel/arch/arm64/boot/dts/rockchip/rk3568-evb1-ddr4-v10-linux.dts` to verify `#define DISPLAY_SWITCH 2` imports `rk3568-vp1-edp-1080p.dtsi`._
+
 ---
 
-## 6. Apply Upstream BSP Fixes
+## 6. Upstream BSP Bugfixes & Workarounds
 
-Run these patches inside `/home/youyeetoo` to prevent known vendor package compilation halts.
+Apply these patches to resolve expired third-party download links and Rockchip out-of-tree package build discrepancies.
 
 ### 6.1 Fix bzip2 Download Mirror (Dead Domain Fix)
 
+`bzip.org` returns an HTML redirect instead of a valid archive. Pre-populate the cache manually:
+
 ```bash
-mkdir -p buildroot/dl/bzip2
-wget -c [https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz](https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz) -O buildroot/dl/bzip2-1.0.6.tar.gz
-cp buildroot/dl/bzip2-1.0.6.tar.gz buildroot/dl/bzip2/
+rm -f /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz
+rm -rf /home/youyeetoo/buildroot/output/build/bzip2-1.0.6
+mkdir -p /home/youyeetoo/buildroot/dl/bzip2
+
+wget -c [https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz](https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz) -O /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz
+cp /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz /home/youyeetoo/buildroot/dl/bzip2/
 
 ```
 
-### 6.2 Fix Rockchip MPP Version Template
+### 6.2 Fix Rockchip MPP Version Template & Syntax
+
+Rockchip MPP expects Git metadata definitions that are omitted in out-of-tree tarball builds. Populate the template and patch `mpp_info.cpp`:
 
 ```bash
-mkdir -p external/mpp/build/cmake
-cat << 'EOF' > external/mpp/build/cmake/version.in
+mkdir -p /home/youyeetoo/external/mpp/build/cmake
+mkdir -p /home/youyeetoo/external/mpp/mpp
+mkdir -p /home/youyeetoo/external/mpp/inc
+
+cat << 'EOF' > /home/youyeetoo/external/mpp/build/cmake/version.in
 #ifndef __MPP_VERSION_H__
 #define __MPP_VERSION_H__
 
@@ -266,13 +294,44 @@ cat << 'EOF' > external/mpp/build/cmake/version.in
 #endif
 EOF
 
+# Ensure version headers are in place across include locations
+cp /home/youyeetoo/external/mpp/build/cmake/version.in /home/youyeetoo/external/mpp/mpp/mpp_version.h
+cp /home/youyeetoo/external/mpp/build/cmake/version.in /home/youyeetoo/external/mpp/inc/mpp_version.h
+
+# If the package was already extracted, patch the working build directory
+if [ -d "/home/youyeetoo/buildroot/output/build/mpp-release" ]; then
+    mkdir -p /home/youyeetoo/buildroot/output/build/mpp-release/build/cmake
+    mkdir -p /home/youyeetoo/buildroot/output/build/mpp-release/mpp
+    mkdir -p /home/youyeetoo/buildroot/output/build/mpp-release/inc
+    cp /home/youyeetoo/external/mpp/build/cmake/version.in /home/youyeetoo/buildroot/output/build/mpp-release/build/cmake/version.in
+    cp /home/youyeetoo/external/mpp/build/cmake/version.in /home/youyeetoo/buildroot/output/build/mpp-release/mpp/mpp_version.h
+    cp /home/youyeetoo/external/mpp/build/cmake/version.in /home/youyeetoo/buildroot/output/build/mpp-release/inc/mpp_version.h
+    find /home/youyeetoo/buildroot/output/build/mpp-release/ -name "*version*.h" -exec cp /home/youyeetoo/external/mpp/build/cmake/version.in {} \;
+    sed -i 's/static const RK_S32 mpp_history_cnt = MPP_VER_HIST_CNT;/static const RK_S32 mpp_history_cnt = 1;/' /home/youyeetoo/buildroot/output/build/mpp-release/mpp/mpp_info.cpp
+    rm -f /home/youyeetoo/buildroot/output/build/mpp-release/.stamp_configured
+fi
+
+if [ -f "/home/youyeetoo/external/mpp/mpp/mpp_info.cpp" ]; then
+    sed -i 's/static const RK_S32 mpp_history_cnt = MPP_VER_HIST_CNT;/static const RK_S32 mpp_history_cnt = 1;/' /home/youyeetoo/external/mpp/mpp/mpp_info.cpp
+fi
+
 ```
 
 ### 6.3 Fix RKNPU2 Library Path Layout
 
+Legacy Buildroot recipes expect headers and pre-built binaries at `Linux/librknn_api`, whereas the source organizes them by SoC family (`runtime/RK356X/Linux`):
+
 ```bash
-if [ -d "external/rknpu2/runtime/RK356X/Linux" ] && [ ! -d "external/rknpu2/Linux" ]; then
-    ln -sf runtime/RK356X/Linux external/rknpu2/Linux
+# Patch external source tree
+if [ -d "/home/youyeetoo/external/rknpu2/runtime/RK356X/Linux" ] && [ ! -d "/home/youyeetoo/external/rknpu2/Linux" ]; then
+    ln -sf runtime/RK356X/Linux /home/youyeetoo/external/rknpu2/Linux
+fi
+
+# Patch active build directory if already extracted
+if [ -d "/home/youyeetoo/buildroot/output/build/rknpu2-1.1.0" ]; then
+    cd /home/youyeetoo/buildroot/output/build/rknpu2-1.1.0
+    ln -sf runtime/RK356X/Linux ./Linux
+    cd /home/youyeetoo
 fi
 
 ```
@@ -281,7 +340,7 @@ fi
 
 ## 7. Build the Firmware
 
-### 7.1 Compile U-Boot, Kernel, and Base Partition Images
+### 7.1 Compile Base Partitions (U-Boot & Kernel)
 
 ```bash
 cd /home/youyeetoo
@@ -289,7 +348,7 @@ cd /home/youyeetoo
 
 ```
 
-### 7.2 Compile the Target Buildroot Root Filesystem
+### 7.2 Compile the Buildroot Target Rootfs
 
 Compile the actual rootfs with your selected Qt5 and driver configuration:
 
@@ -300,13 +359,13 @@ cd /home/youyeetoo
 
 ```
 
-_Verification: Confirm `buildroot/output/images/rootfs.ext4` is created._
+_Verification: Ensure `buildroot/output/images/rootfs.ext4` is generated._
 
 ---
 
 ## 8. Packaging `update.img`
 
-### 8.1 Setup Packaging Symlinks
+### 8.1 Setup Packaging Tool Symlinks
 
 Link the Rockchip packaging tools:
 
@@ -323,9 +382,9 @@ ln -sf ../tools/linux/Linux_Pack_Firmware/rockdev/rk356x-package-file ./package-
 
 ```
 
-### 8.2 Link the Buildroot Rootfs (Prevent Debian Fallback)
+### 8.2 Symlink Buildroot Rootfs (Prevent Debian Fallback)
 
-Ensure the packaging script points to the newly compiled Buildroot filesystem rather than the Debian image:
+Ensure packaging links point directly to the newly compiled Buildroot filesystem:
 
 ```bash
 cd /home/youyeetoo/rockdev
@@ -336,20 +395,20 @@ cd /home/youyeetoo
 
 ```
 
-### 8.3 Generate Unified Firmware
+### 8.3 Generate Unified Firmware Image
 
 ```bash
 ./build.sh updateimg
 
 ```
 
-_Verification: Confirm `rockdev/update.img` is created and has a size around **800 MB to 1.3 GB** (not 4.0 GB)._
+_Verification: Check image size (`ls -lh rockdev/update.img`). The generated firmware should be **~800 MB to 1.3 GB** (confirming Buildroot usage instead of the 4.0 GB Debian image)._
 
 ---
 
 ## 9. Flashing & Verification (Host Machine)
 
-Execute on your host PC outside the container.
+Execute on your Linux host outside the container.
 
 ### 9.1 Install `rkdeveloptool`
 
@@ -366,7 +425,7 @@ sudo cp build/rkdeveloptool /usr/local/bin/
 
 1. Connect the YY3568 USB Type-C OTG port to your PC.
 2. Hold **Recovery**, press **Reset**, wait 3 seconds, and release.
-3. Flash the generated image:
+3. Flash the firmware image:
 
 ```bash
 cd 6_rk_image/rockdev
@@ -379,9 +438,9 @@ sudo rkdeveloptool rd
 
 ### 9.3 On-Board Validation
 
-After boot (`Welcome to RK356X Buildroot`), verify settings via serial or local terminal:
+Once booted into Buildroot (`Welcome to RK356X Buildroot`), verify settings via serial or local terminal:
 
-- **EGLFS Environment:** `env | grep QT_QPA` (Should show `eglfs_kms` and `/etc/kms.conf`).
-- **Display Status:** `cat /sys/class/drm/card0-eDP-1/status` (Should read `connected`).
-- **GPU & DRM Test:** `kmscube` (A 3D cube should render smoothly on screen).
-- **Qt Apps & Rotation:** Run `qplayer` to confirm hardware acceleration and 90° rotation directly on `eDP-1`.
+- **EGLFS Environment:** `env | grep QT_QPA` _(Should show `eglfs_kms` and `/etc/kms.conf`)._
+- **Display Output:** `cat /sys/class/drm/card0-eDP-1/status` _(Should return `connected`)._
+- **GPU & DRM Test:** `kmscube` _(A 3D cube should render smoothly on the display)._
+- **Qt Apps & Rotation:** Run `qplayer` to confirm hardware acceleration and 90° orientation directly on `eDP-1`.
