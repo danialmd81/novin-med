@@ -15,7 +15,7 @@ Run on your host machine to concatenate and decompress the multi-part archive:
 
 ```bash
 cat YY3568-Debian10.tar.gz.0* | tar -xzv
-cd YY3568-Debian
+cd YY3568-Debian10
 git reset --hard HEAD
 
 ```
@@ -114,47 +114,43 @@ make menuconfig
 Ensure the following options are selected:
 
 - **Toolchain (`Toolchain --->`)**
-- `[*] Enable C++ support`
-- `[*] Enable WCHAR support`
-- `[*] Enable thread support`
+  - `[*] Enable C++ support`
+  - `[*] Enable WCHAR support`
+  - `[*] Enable thread support`
 
 - **Rockchip Hardware Drivers (`Target packages ---> Rockchip BSP packages --->`)**
-- `[*] rockchip libmali`
-- `display platform (gbm) --->` _(Must be **`gbm`**, NOT `wayland`)_
-- `[*] Rockchip RGA lib for linux`
-- `[*] MPP(Multimedia Processing Platform)`
-- `[*] rkwifibt`
+  - `[*] rockchip libmali`
+  - `display platform (gbm) --->` _(Must be **`gbm`**, NOT `wayland`)_
+  - `[*] Rockchip RGA lib for linux`
+  - `[*] MPP(Multimedia Processing Platform)`
+  - `[*] rkwifibt`
 
 - **Graphic Engine & Qt5 (`Target packages ---> Graphic libraries and applications --->`)**
-- `[*] kmscube`
-- `[ ] weston` _(Must be disabled to prevent DRM device conflicts)_
-- `[*] Qt5 --->` -> `[*] qt5base --->`:
-- `[*] gui module`
-- `[*] widgets module`
-- `OpenGL support: OpenGL ES 2.0+`
-- Platform plugins:
-- `[*] EGLFS support`
-- `[*] KMS/DRM backend`
-- `[*] libinput support`
-
-- `[*] Enable RGA`
-
-- Additional Qt Modules:
-- `[*] qt5declarative` -> `[*] quick module`
-- `[*] qt5graphicaleffects`
-- `[*] qt5imageformats`
-- `[*] qt5multimedia`
-- `[*] qt5quickcontrols2`
-- `[*] qt5tools`
-
+  - `[*] kmscube`
+  - `[ ] weston` _(Must be disabled to prevent DRM device conflicts)_
+  - `[*] Qt5 --->` -> `[*] qt5base --->`:
+    - `[*] gui module`
+    - `[*] widgets module`
+    - `OpenGL support: OpenGL ES 2.0+`
+    - Platform plugins:
+      - `[*] EGLFS support`
+      - `[*] KMS/DRM backend`
+      - `[*] libinput support`
+    - `[*] Enable RGA`
+    - Additional Qt Modules:
+      - `[*] qt5declarative` -> `[*] quick module`
+      - `[*] qt5graphicaleffects`
+      - `[*] qt5imageformats`
+      - `[*] qt5multimedia`
+      - `[*] qt5quickcontrols2`
+      - `[*] qt5tools`
 - **OpenCV 3 (`Target packages ---> Libraries ---> Graphics ---> opencv3`)**
-- Core modules: `[*] highgui`, `[*] imgcodecs`, `[*] imgproc`, `[*] video`, `[*] videoio`
-- 3rd party support: `[*] ffmpeg support`, `[*] jpeg support`, `[*] png support`, `[*] v4l support`
-
+  - Core modules: `[*] highgui`, `[*] imgcodecs`, `[*] imgproc`, `[*] video`, `[*] videoio`
+  - 3rd party support: `[*] ffmpeg support`, `[*] jpeg support`, `[*] png support`, `[*] v4l support`
 - **Networking (`Target packages ---> Networking applications --->`)**
-- `[*] wpa_supplicant` (`[*] nl80211 support`, `[*] wpa_cli`)
-- `[*] wireless-tools`
-- `[*] iw`
+  - `[*] wpa_supplicant` (`[*] nl80211 support`, `[*] wpa_cli`)
+  - `[*] wireless-tools`
+  - `[*] iw`
 
 ### 3.3 Save Defconfig
 
@@ -254,8 +250,9 @@ rm -f /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz
 rm -rf /home/youyeetoo/buildroot/output/build/bzip2-1.0.6
 mkdir -p /home/youyeetoo/buildroot/dl/bzip2
 
-wget -c [https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz](https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz) -O /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz
-cp /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz /home/youyeetoo/buildroot/dl/bzip2/
+wget -c https://sourceware.org/pub/bzip2/bzip2-1.0.6.tar.gz -O /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz
+mv /home/youyeetoo/buildroot/dl/bzip2-1.0.6.tar.gz /home/youyeetoo/buildroot/dl/bzip2/
+file /home/youyeetoo/buildroot/dl/bzip2/bzip2-1.0.6.tar.gz
 
 ```
 
@@ -336,36 +333,32 @@ fi
 
 ```
 
+### 6.4 Fix MAC address
+
+```bash
+cat << 'EOF' > buildroot/board/rockchip/common/base/etc/init.d/S39setmac
+#!/bin/sh
+case "$1" in
+  start)
+    echo "Configuring static MAC address for eth0..."
+    ip link set dev eth0 down
+    ip link set dev eth0 address 5A:89:92:FE:D6:26
+    ip link set dev eth0 up
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+EOF
+chmod +x buildroot/board/rockchip/common/base/etc/init.d/S39setmac
+
+```
+
 ---
 
 ## 7. Build the Firmware
 
-### 7.1 Compile Base Partitions (U-Boot & Kernel)
-
-```bash
-cd /home/youyeetoo
-./build.sh 2>&1 | tee build.log
-
-```
-
-### 7.2 Compile the Buildroot Target Rootfs
-
-Compile the actual rootfs with your selected Qt5 and driver configuration:
-
-```bash
-cd /home/youyeetoo/buildroot
-make
-cd /home/youyeetoo
-
-```
-
-_Verification: Ensure `buildroot/output/images/rootfs.ext4` is generated._
-
----
-
-## 8. Packaging `update.img`
-
-### 8.1 Setup Packaging Tool Symlinks
+### 7.1 Setup Packaging Tool Symlinks
 
 Link the Rockchip packaging tools:
 
@@ -381,6 +374,31 @@ ln -sf ../tools/linux/Linux_Pack_Firmware/rockdev/afptool ./afptool
 ln -sf ../tools/linux/Linux_Pack_Firmware/rockdev/rk356x-package-file ./package-file
 
 ```
+
+### 7.2 Compile Base Partitions (U-Boot & Kernel)
+
+```bash
+cd /home/youyeetoo
+./build.sh 2>&1 | tee build.log
+
+```
+
+---
+
+## 8. Packaging `update.img`
+
+### 8.1 Compile the Buildroot Target Rootfs
+
+Compile the actual rootfs with your selected Qt5 and driver configuration:
+
+```bash
+cd /home/youyeetoo/buildroot
+make
+cd /home/youyeetoo
+
+```
+
+_Verification: Ensure `buildroot/output/images/rootfs.ext4` is generated._
 
 ### 8.2 Symlink Buildroot Rootfs (Prevent Debian Fallback)
 
