@@ -10,14 +10,12 @@ mkdir -p "${SYSROOT_DIR}"
 echo "Starting sysroot sync from ${TARGET_IP}..."
 
 # 1. Sync /lib
-rsync -avzP --partial --safe-links \
-  -e 'ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=6' \
+rsync -avzP \
   "root@${TARGET_IP}:/lib" \
   "${SYSROOT_DIR}/"
 
 # 2. Sync /usr/lib and /usr/include
-rsync -avzP --partial --safe-links \
-  -e 'ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=6' \
+rsync -avzP \
   --exclude='/usr/share/doc' \
   --exclude='/usr/share/man' \
   --exclude='/usr/share/locale' \
@@ -32,8 +30,7 @@ rsync -avzP --partial --safe-links \
   "${SYSROOT_DIR}/usr/"
 
 # 3. Sync pkgconfig from /usr/share (if present)
-rsync -avzP --partial --safe-links \
-  -e 'ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=6' \
+rsync -avzP \
   "root@${TARGET_IP}:/usr/share/pkgconfig" \
   "${SYSROOT_DIR}/usr/share/" || true
 
