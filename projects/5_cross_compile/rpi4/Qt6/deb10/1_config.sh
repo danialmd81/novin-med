@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# ------------------------------------------------------------
+# config.sh - configure Qt6 for rpi4 cross-compilation
+# ------------------------------------------------------------
+set -e
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/env.sh"
+
+msg "Configuring Qt for rpi4 cross-compilation..."
+mkdir -p "${BUILD_DIR}" "${STAGING_DIR}"
+pushd "${BUILD_DIR}" >/dev/null
+
+"${QT_SRC_DIR}/configure" \
+	-release \
+	-opengl es2 \
+	-egl \
+	-platform "${DEVICE_MKSPEC}" \
+	-device-option CROSS_COMPILE="${CROSS_COMPILE}" \
+	-device-option EGLFS_DEVICE_INTEGRATION="${EGLFS_DEVICE_INTEGRATION}" \
+	-qt-host-path "${QT_HOST_PATH}" \
+	-extprefix "${STAGING_DIR}" \
+	-prefix "${INSTALL_PREFIX}" \
+	-opensource -confirm-license \
+	-qt-doubleconversion \
+	-qt-pcre \
+	-skip qtdoc -skip qtdatavis3d -skip qtgrpc -skip qtopcua -skip qtscript -skip qtwayland -skip qtwebengine -skip qtwebview \
+	-nomake examples -nomake tests \
+	-pkg-config \
+	-no-use-gold-linker \
+	-- -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
+	   -DCMAKE_SYSROOT="${SYSROOT_DIR}"
+
+popd >/dev/null
+
+msg "Configure complete. Verifying EGLFS and Multimedia capabilities in summary:"
+grep -A15 'EGLFS' "${BUILD_DIR}/config.summary" || true
+grep -A5 'Qt Multimedia' "${BUILD_DIR}/config.summary" || true
