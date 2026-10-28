@@ -7,3 +7,6 @@
 [submodule "projects/hightesla"]
 	path = projects/hightesla
 	url = https://github.com/danialmd81/hightesla.git
+[submodule "projects/novin-core"]
+	path = projects/novin-core
+	url = https://github.com/danialmd81/novin-core.git
