@@ -7,3 +7,6 @@
 [submodule "projects/novin-sdk"]
 	path = projects/novin-sdk
 	url = https://github.com/danialmd81/novin-sdk.git
+[submodule "projects/ems-android"]
+	path = projects/ems-android
+	url = https://github.com/danialmd81/ems-android.git
