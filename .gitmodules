@@ -10,3 +10,6 @@
 [submodule "projects/ems-android"]
 	path = projects/ems-android
 	url = https://github.com/danialmd81/ems-android.git
+[submodule "projects/hightesla-chair"]
+	path = projects/hightesla-chair
+	url = https://github.com/danialmd81/hightesla-chair.git
